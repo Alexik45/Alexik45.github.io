@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+        <title>alex1k45 // dev</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <canvas id="warpGridCanvas"></canvas>
+        <div class="grain-overlay"></div>
+        <div class="crt-overlay active" id="crtOverlay"></div>
+
+        <!-- Header -->
+        <header class="site-header">
+            <div class="header-inner">
+                <div class="brand">
+                    <span class="pulse-dot"></span>
+                    <span class="brand-text">alex1k45<span class="dim">@box:~</span></span>
+                </div>
+
+                <nav class="nav-links">
+                    <a href="#lab" class="nav-link"><span class="nav-index">01</span>Lab</a>
+                    <a href="#projects" class="nav-link"><span class="nav-index">02</span>Projects</a>
+                    <a href="#stack" class="nav-link"><span class="nav-index">03</span>Stack</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button id="soundToggle" class="tactile-btn" data-state="on" title="Synthetic feedback">
+                        <span class="btn-led"></span>SFX
+                    </button>
+                    <button id="crtToggle" class="tactile-btn" data-state="on" title="CRT Phosphor Filter">
+                        <span class="btn-led"></span>CRT
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Hero -->
+            <section class="hero-section">
+                <div class="hero-layout">
+                    <div class="hero-main">
+                        <div class="status-pill">
+                            <span class="mono-tag">PERSONAL_SPACE</span>
+                            <span class="pill-divider">/</span>
+                            <span class="pill-text">JUST BUILDING & HOSTING STUFF</span>
+                        </div>
+                        <h1 class="hero-title">
+                            Writing code, hosting bots, and <span class="accent-italic">breaking</span> things for fun.
+                        </h1>
+                        <p class="hero-desc">
+                            Messing with C, Python, web stuff, and self-hosted Linux servers. Here are a few experiments, tools, and things I run.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="https://discordapp.com/users/768033946666663946" target="_blank" rel="noreferrer" class="action-btn action-primary">
+                                <span>Discord Profile</span>
+                                <span class="btn-arrow">↗</span>
+                            </a>
+                            <a href="https://github.com/Alexik45" target="_blank" rel="noreferrer" class="action-btn action-ghost">
+                                <span>GitHub</span>
+                                <span class="btn-arrow">↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hero-viewport corner-frame">
+                        <div class="viewport-bar">
+                            <span class="bar-title">realtime_scope.wasm</span>
+                            <span class="bar-dim">audio/wave</span>
+                        </div>
+                        <canvas id="scopeCanvas" width="460" height="240"></canvas>
+                        <div class="viewport-footer">
+                            <span class="footer-metric">SIGNAL: ACTIVE</span>
+                            <span class="footer-metric" id="fpsCounter">60 FPS</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lab -->
+            <section id="lab" class="content-section">
+                <div class="section-heading">
+                    <div class="section-meta">
+                        <span class="section-num">01</span>
+                        <span class="section-label">INTERACTIVE TOYS</span>
+                    </div>
+                    <h2 class="section-title">Lab / Sandbox</h2>
+                </div>
+
+                <div class="lab-layout">
+                    <div class="lab-card corner-frame">
+                        <div class="card-topbar">
+                            <span class="file-name">sound_board.ts</span>
+                            <span class="pill-mini">AudioNode</span>
+                        </div>
+                        <div class="synth-board">
+                            <div class="synth-pads">
+                                <button class="audio-pad" data-freq="130.81">C3</button>
+                                <button class="audio-pad" data-freq="164.81">E3</button>
+                                <button class="audio-pad" data-freq="196.00">G3</button>
+                                <button class="audio-pad" data-freq="246.94">B3</button>
+                                <button class="audio-pad" data-freq="293.66">D4</button>
+                                <button class="audio-pad" data-freq="392.00">G4</button>
+                            </div>
+                        </div>
+                        <p class="card-caption">Pure Web Audio synthesizer pads with procedural exponential decay.</p>
+                    </div>
+
+                    <div class="lab-card corner-frame">
+                        <div class="card-topbar">
+                            <span class="file-name">grid_physics.glsl</span>
+                            <span class="pill-mini">Canvas 2D</span>
+                        </div>
+                        <div class="lab-param-panel">
+                            <div class="param-row">
+                                <span class="param-name">TENSION</span>
+                                <input type="range" id="tensionSlider" min="0.01" max="0.1" step="0.005" value="0.04" class="slider-input">
+                            </div>
+                            <div class="param-row">
+                                <span class="param-name">DAMPING</span>
+                                <input type="range" id="dampingSlider" min="0.80" max="0.99" step="0.01" value="0.92" class="slider-input">
+                            </div>
+                            <div class="param-row">
+                                <span class="param-name">RADIUS</span>
+                                <input type="range" id="radiusSlider" min="80" max="300" step="10" value="160" class="slider-input">
+                            </div>
+                        </div>
+                        <p class="card-caption">Directly tweaks the spring mechanics on the interactive background mesh.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects -->
+            <section id="projects" class="content-section">
+                <div class="section-heading">
+                    <div class="section-meta">
+                        <span class="section-num">02</span>
+                        <span class="section-label">CLICK FOR SPECS & HOW IT WORKS</span>
+                    </div>
+                    <h2 class="section-title">Projects & Infrastructure</h2>
+                </div>
+
+                <div class="project-matrix">
+                    <article class="project-card corner-frame interactive-card" data-project="homeserver">
+                        <div class="project-header">
+                            <span class="project-mono">01_INFRA</span>
+                            <div class="project-tags">
+                                <span>Ubuntu</span>
+                                <span>CasaOS</span>
+                                <span>Tailscale</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">Self-Hosted Home Server Rig</h3>
+                        <p class="project-detail">
+                            Repurposed machine running 24/7 Ubuntu Server with isolated Docker containers, zero-trust mesh tunnels, and centralized app management.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                        </div>
+                    </article>
+
+                    <article class="project-card corner-frame interactive-card" data-project="discordbot">
+                        <div class="project-header">
+                            <span class="project-mono">02_BOT</span>
+                            <div class="project-tags">
+                                <span>Python</span>
+                                <span>discord.py</span>
+                                <span>PM2</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">Discord Bot & Automation Daemon</h3>
+                        <p class="project-detail">
+                            Custom multi-purpose server bot handling community moderation, interactive embeds, dynamic roles, and 24/7 automated background tasks.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                        </div>
+                    </article>
+
+                    <article class="project-card corner-frame interactive-card" data-project="cloudstorage">
+                        <div class="project-header">
+                            <span class="project-mono">03_STORAGE</span>
+                            <div class="project-tags">
+                                <span>Docker</span>
+                                <span>Seafile</span>
+                                <span>AList</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">Private Cloud & Storage Portal</h3>
+                        <p class="project-detail">
+                            Self-hosted cloud storage stack combining block-level device syncing with a unified web aggregator for direct access anywhere.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                        </div>
+                    </article>
+
+                    <article class="project-card corner-frame interactive-card" data-project="gameservers">
+                        <div class="project-header">
+                            <span class="project-mono">04_OPS</span>
+                            <div class="project-tags">
+                                <span>Linux</span>
+                                <span>Bash</span>
+                                <span>Fabric</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">Game Server Automation & Daemons</h3>
+                        <p class="project-detail">
+                            Custom bash scripts and cron jobs handling automated backups, heap garbage collection, process recovery, and Discord status webhooks.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                        </div>
+                    </article>
+
+                    <article class="project-card corner-frame wip-card">
+                        <div class="project-header">
+                            <span class="project-mono">05_PIPELINE</span>
+                            <div class="project-tags">
+                                <span>In Dev</span>
+                                <span>WIP</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">More Coming Soon...</h3>
+                        <p class="project-detail">
+                            Currently tinkering with new automation scripts, network tooling, and custom bot integrations. New deployments will drop here once tested.
+                        </p>
+                        <div class="project-footer">
+                            <span class="wip-pulse-indicator"><span class="wip-dot"></span>Cooking up new builds</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Stack -->
+            <section id="stack" class="content-section">
+                <div class="section-heading">
+                    <div class="section-meta">
+                        <span class="section-num">03</span>
+                        <span class="section-label">WHAT I WORK WITH</span>
+                    </div>
+                    <h2 class="section-title">Stack & Skills</h2>
+                </div>
+
+                <div class="spec-table corner-frame">
+                    <div class="spec-row">
+                        <div class="spec-label">LANGUAGES</div>
+                        <div class="spec-val">Python, C, C#, JavaScript, HTML5, CSS3, SQL (Basics)</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">SYSTEMS & HOSTING</div>
+                        <div class="spec-val">Linux (Ubuntu / Debian), Server Administration, Web Hosting, SSH, Bash</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">BOTS & SERVICES</div>
+                        <div class="spec-val">Discord Bots (hosting & 24/7 uptime), Process Management, Docker containers</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">NETWORKING & TOOLS</div>
+                        <div class="spec-val">Tailscale, zrok, Git, GitHub, VS Code, Browser DevTools, Terminal</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Project Detail Modal -->
+        <div id="projectModal" class="modal-backdrop">
+            <div class="modal-window corner-frame">
+                <div class="modal-header">
+                    <div class="modal-meta">
+                        <span id="modalId" class="modal-badge">00_PROJECT</span>
+                        <span id="modalTags" class="modal-tags"></span>
+                    </div>
+                    <button id="modalCloseBtn" class="modal-close" title="Close" aria-label="Close modal">[ ESC / ✕ ]</button>
+                </div>
+                <div class="modal-content">
+                    <h2 id="modalTitle" class="modal-title">Project Title</h2>
+
+                    <div class="modal-block">
+                        <h4 class="modal-block-label">// What it is</h4>
+                        <p id="modalWhatIs" class="modal-text"></p>
+                    </div>
+
+                    <div class="modal-block">
+                        <h4 class="modal-block-label">// What it does</h4>
+                        <p id="modalWhatDoes" class="modal-text"></p>
+                    </div>
+
+                    <div class="modal-block">
+                        <h4 class="modal-block-label">// How it works & Architecture</h4>
+                        <p id="modalHowWorks" class="modal-text"></p>
+                    </div>
+
+                    <div class="modal-block">
+                        <h4 class="modal-block-label">// Tech Stack & Key Components</h4>
+                        <ul id="modalTechList" class="modal-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-left">
+                    <span class="brand-text">alex1k45</span>
+                    <span class="footer-dim">— personal playground</span>
+                </div>
+                <div class="footer-right">
+                    <a href="https://discordapp.com/users/768033946666663946" target="_blank" rel="noreferrer" class="footer-anchor">Discord</a>
+                    <a href="https://github.com/Alexik45" target="_blank" rel="noreferrer" class="footer-anchor">GitHub</a>
+                </div>
+            </div>
+        </footer>
+
+        <script src="js/main.js"></script>
+    </body>
+</html>

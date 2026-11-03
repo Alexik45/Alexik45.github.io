@@ -1,0 +1,382 @@
+// Interactive Deformable Vector Grid
+const bgCanvas = document.getElementById('warpGridCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+
+let gridW = 0;
+let gridH = 0;
+let points = [];
+let spacing = 42;
+
+let mouse = { x: -9999, y: -9999, vx: 0, vy: 0, px: 0, py: 0 };
+let physics = {
+    tension: 0.04,
+    damping: 0.92,
+    radius: 160
+};
+
+function resizeCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+
+    // Scale spacing on small screens to maintain 60 FPS
+    spacing = window.innerWidth < 680 ? 56 : 42;
+    gridW = Math.ceil(bgCanvas.width / spacing) + 2;
+    gridH = Math.ceil(bgCanvas.height / spacing) + 2;
+
+    points = [];
+    for (let y = 0; y < gridH; y++) {
+        for (let x = 0; x < gridW; x++) {
+            points.push({
+                baseX: x * spacing,
+                baseY: y * spacing,
+                x: x * spacing,
+                y: y * spacing,
+                vx: 0,
+                vy: 0
+            });
+        }
+    }
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function handlePointerMove(clientX, clientY) {
+    mouse.vx = clientX - mouse.px;
+    mouse.vy = clientY - mouse.py;
+    mouse.px = clientX;
+    mouse.py = clientY;
+    mouse.x = clientX;
+    mouse.y = clientY;
+}
+
+window.addEventListener('pointermove', (e) => {
+    handlePointerMove(e.clientX, e.clientY);
+});
+
+window.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+}, { passive: true });
+
+function resetPointer() {
+    mouse.x = -9999;
+    mouse.y = -9999;
+}
+
+window.addEventListener('pointerleave', resetPointer);
+window.addEventListener('pointerup', resetPointer);
+window.addEventListener('touchend', resetPointer);
+
+function stepPhysics() {
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < physics.radius) {
+            const force = (1 - dist / physics.radius) * 12;
+            const angle = Math.atan2(dy, dx);
+            p.vx -= Math.cos(angle) * force + mouse.vx * 0.15;
+            p.vy -= Math.sin(angle) * force + mouse.vy * 0.15;
+        }
+
+        const homeX = p.baseX - p.x;
+        const homeY = p.baseY - p.y;
+        p.vx += homeX * physics.tension;
+        p.vy += homeY * physics.tension;
+
+        p.vx *= physics.damping;
+        p.vy *= physics.damping;
+
+        p.x += p.vx;
+        p.y += p.vy;
+    }
+}
+
+function renderGrid() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    stepPhysics();
+
+    bgCtx.lineWidth = 0.5;
+
+    for (let y = 0; y < gridH; y++) {
+        for (let x = 0; x < gridW; x++) {
+            const idx = y * gridW + x;
+            const p = points[idx];
+
+            if (x < gridW - 1) {
+                const right = points[idx + 1];
+                const d = Math.hypot(p.x - p.baseX, p.y - p.baseY);
+                bgCtx.strokeStyle = d > 2 ? `rgba(163, 168, 180, ${Math.min(0.4, d * 0.05)})` : 'rgba(72, 72, 77, 0.22)';
+                bgCtx.beginPath();
+                bgCtx.moveTo(p.x, p.y);
+                bgCtx.lineTo(right.x, right.y);
+                bgCtx.stroke();
+            }
+
+            if (y < gridH - 1) {
+                const bottom = points[idx + gridW];
+                const d = Math.hypot(p.x - p.baseX, p.y - p.baseY);
+                bgCtx.strokeStyle = d > 2 ? `rgba(163, 168, 180, ${Math.min(0.4, d * 0.05)})` : 'rgba(72, 72, 77, 0.22)';
+                bgCtx.beginPath();
+                bgCtx.moveTo(p.x, p.y);
+                bgCtx.lineTo(bottom.x, bottom.y);
+                bgCtx.stroke();
+            }
+
+            const stress = Math.hypot(p.vx, p.vy);
+            if (stress > 0.4) {
+                bgCtx.fillStyle = '#a3a8b4';
+                bgCtx.fillRect(p.x - 1, p.y - 1, 2, 2);
+            }
+        }
+    }
+    requestAnimationFrame(renderGrid);
+}
+renderGrid();
+
+// Audio Synth & SFX Engine
+let sfxActive = true;
+let crtActive = true;
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audio = null;
+
+function getAudioContext() {
+    if (!audio) audio = new AudioCtx();
+    if (audio.state === 'suspended') {
+        audio.resume().catch(() => {});
+    }
+    return audio;
+}
+
+function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
+    if (!sfxActive) return;
+    try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (_) {}
+}
+
+// Oscilloscope Viewport Simulation
+const scopeCanvas = document.getElementById('scopeCanvas');
+const scopeCtx = scopeCanvas.getContext('2d');
+let scopePhase = 0;
+let lastFrameTime = performance.now();
+const fpsElement = document.getElementById('fpsCounter');
+
+function renderScope() {
+    const now = performance.now();
+    const delta = now - lastFrameTime;
+    lastFrameTime = now;
+    if (fpsElement && Math.random() < 0.05) {
+        fpsElement.textContent = `${Math.round(1000 / (delta || 16))} FPS`;
+    }
+
+    scopeCtx.fillStyle = '#0d0e10';
+    scopeCtx.fillRect(0, 0, scopeCanvas.width, scopeCanvas.height);
+
+    scopeCtx.lineWidth = 1;
+    scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.4)';
+    scopeCtx.beginPath();
+    scopeCtx.moveTo(0, scopeCanvas.height / 2);
+    scopeCtx.lineTo(scopeCanvas.width, scopeCanvas.height / 2);
+    scopeCtx.stroke();
+
+    scopeCtx.lineWidth = 1.2;
+    scopeCtx.strokeStyle = '#c8cbd0';
+    scopeCtx.beginPath();
+
+    const cy = scopeCanvas.height / 2;
+    for (let x = 0; x < scopeCanvas.width; x++) {
+        const norm = (x / scopeCanvas.width) * Math.PI * 4;
+        const y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5) + (Math.random() - 0.5) * 1.5;
+        if (x === 0) scopeCtx.moveTo(x, y);
+        else scopeCtx.lineTo(x, y);
+    }
+    scopeCtx.stroke();
+
+    scopePhase += 0.035;
+    requestAnimationFrame(renderScope);
+}
+renderScope();
+
+// Project Details Database & Modal Controller
+const projectData = {
+    homeserver: {
+        id: "01_INFRA",
+        tags: "Ubuntu Server / CasaOS / Docker / Tailscale / zrok",
+        title: "Self-Hosted Home Server Rig",
+        whatIs: "A dedicated 24/7 home server configured on a repurposed low-power machine, tailored for hosting internal web services, microservices, and file backends without high electricity draw.",
+        whatDoes: "Runs containerized services around the clock, handles secure remote connections, hosts private Discord bots and automations, and provides a personal cloud environment accessible from anywhere without opening vulnerable router ports.",
+        howWorks: "Built on Ubuntu Server with CasaOS acting as a lightweight container orchestrator. Remote access is routed securely through a Tailscale mesh network and encrypted zrok tunnels. Wi-Fi interfaces and network drivers were configured directly in the terminal, while custom systemd daemons keep background containers running reliably through network drops.",
+        techList: [
+            "Ubuntu Server minimal OS",
+            "CasaOS container orchestration & Docker daemon",
+            "Tailscale secure mesh VPN & zrok outbound tunnels",
+            "TP-Link high-gain Wi-Fi driver compilation & network configs",
+            "Zero open ports on router for security"
+        ]
+    },
+    discordbot: {
+        id: "02_BOT",
+        tags: "Python / discord.py / PM2 / Linux Daemon",
+        title: "Discord Bot & Automation Daemon",
+        whatIs: "A custom-built community Discord bot running continuously to handle server administration, interactive tools, event tracking, and background automation.",
+        whatDoes: "Manages member verification, role assignments, dynamic embeds, server utility commands, automated cleanups, and notifies community channels of updates or server state changes.",
+        howWorks: "Written in asynchronous Python utilizing modern discord.py library architecture. Deployed on the home server and managed via process managers (PM2 and systemd services) that monitor memory limits, handle auto-restart on crashes or server reboots, and log all events to disk.",
+        techList: [
+            "Python 3 with discord.py async framework",
+            "PM2 / systemd background process supervisor",
+            "Dynamic command handling & permission validation",
+            "Webhook dispatchers for server alerts and logging",
+            "Local file / lightweight database persistence"
+        ]
+    },
+    cloudstorage: {
+        id: "03_STORAGE",
+        tags: "Docker / Seafile / AList / Reverse Proxy",
+        title: "Private Cloud & Storage Portal",
+        whatIs: "A multi-tiered personal storage network designed to completely replace commercial cloud subscriptions with high-speed private syncing.",
+        whatDoes: "Syncs workspaces, media files, and backups seamlessly across phones, laptops, and the server. Also provides an aggregated single web dashboard to view and stream stored assets directly.",
+        howWorks: "Runs Seafile server inside Docker containers for reliable delta-syncing across client machines, while AList is deployed to mount and aggregate multiple drives into a unified browser explorer. Bound to local network addresses and tunneled securely for mobile access outside the home.",
+        techList: [
+            "Seafile server backend for delta block syncing",
+            "AList file aggregation & web-based explorer interface",
+            "Docker persistent volume mapping & permission handling",
+            "Encrypted sync connections between Linux & Windows endpoints"
+        ]
+    },
+    gameservers: {
+        id: "04_OPS",
+        tags: "Bash / Fabric / Minecraft / Cron Daemons",
+        title: "Game Server Automation & Daemons",
+        whatIs: "Custom management scripts and cron services engineered to operate heavy modded game servers (Fabric, All The Mods, Tekxit) smoothly on local server hardware.",
+        whatDoes: "Handles scheduled server restarts, checks memory utilization to prevent Java memory leaks, triggers automated world archive backups, and pings Discord webhooks when players join or crashes occur.",
+        howWorks: "Written in Bash and hooked into Linux cron daemons and screen/tmux sessions. The scripts periodically poll the running Java processes, pipe commands into the server console gracefully, compress world folders into backup storage, and notify Discord through HTTP curl webhooks.",
+        techList: [
+            "Custom Bash shell scripts with cron scheduling",
+            "tmux / screen background session management",
+            "Garbage collection tuning & automated memory reclamation",
+            "Discord webhook notifications for server events",
+            "Automated tar.gz rotating backups"
+        ]
+    }
+};
+
+const modalBackdrop = document.getElementById('projectModal');
+const modalCloseBtn = document.getElementById('modalCloseBtn');
+const modalId = document.getElementById('modalId');
+const modalTags = document.getElementById('modalTags');
+const modalTitle = document.getElementById('modalTitle');
+const modalWhatIs = document.getElementById('modalWhatIs');
+const modalWhatDoes = document.getElementById('modalWhatDoes');
+const modalHowWorks = document.getElementById('modalHowWorks');
+const modalTechList = document.getElementById('modalTechList');
+
+function openProjectModal(key) {
+    const item = projectData[key];
+    if (!item) return;
+
+    modalId.textContent = item.id;
+    modalTags.textContent = item.tags;
+    modalTitle.textContent = item.title;
+    modalWhatIs.textContent = item.whatIs;
+    modalWhatDoes.textContent = item.whatDoes;
+    modalHowWorks.textContent = item.howWorks;
+
+    modalTechList.innerHTML = '';
+    item.techList.forEach(tech => {
+        const li = document.createElement('li');
+        li.textContent = tech;
+        modalTechList.appendChild(li);
+    });
+
+    modalBackdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    triggerTone(620, 'sine', 0.05, 0.04);
+}
+
+function closeProjectModal() {
+    if (!modalBackdrop.classList.contains('active')) return;
+    modalBackdrop.classList.remove('active');
+    document.body.style.overflow = '';
+    triggerTone(380, 'sine', 0.04, 0.03);
+}
+
+document.querySelectorAll('.interactive-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const key = card.dataset.project;
+        openProjectModal(key);
+    });
+});
+
+modalCloseBtn.addEventListener('click', closeProjectModal);
+
+modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) closeProjectModal();
+});
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeProjectModal();
+});
+
+// Controls & Audio Bindings
+const soundBtn = document.getElementById('soundToggle');
+const crtBtn = document.getElementById('crtToggle');
+const crtOverlay = document.getElementById('crtOverlay');
+
+soundBtn.addEventListener('click', () => {
+    sfxActive = !sfxActive;
+    soundBtn.setAttribute('data-state', sfxActive ? 'on' : 'off');
+    if (sfxActive) triggerTone(880, 'sine', 0.04, 0.04);
+});
+
+crtBtn.addEventListener('click', () => {
+    crtActive = !crtActive;
+    crtOverlay.classList.toggle('active', crtActive);
+    crtBtn.setAttribute('data-state', crtActive ? 'on' : 'off');
+    triggerTone(crtActive ? 520 : 330, 'triangle', 0.06, 0.03);
+});
+
+document.querySelectorAll('.audio-pad').forEach(pad => {
+    const playPadTone = () => {
+        const freq = parseFloat(pad.dataset.freq);
+        triggerTone(freq, 'triangle', 0.35, 0.06);
+    };
+    pad.addEventListener('pointerdown', playPadTone);
+});
+
+document.querySelectorAll('a, button, input, .interactive-card').forEach(el => {
+    el.addEventListener('pointerenter', () => {
+        if (el !== soundBtn && el !== crtBtn && window.matchMedia('(hover: hover)').matches) {
+            triggerTone(1200, 'sine', 0.015, 0.012);
+        }
+    });
+});
+
+const tensionInput = document.getElementById('tensionSlider');
+const dampingInput = document.getElementById('dampingSlider');
+const radiusInput = document.getElementById('radiusSlider');
+
+if (tensionInput && dampingInput && radiusInput) {
+    tensionInput.addEventListener('input', (e) => physics.tension = parseFloat(e.target.value));
+    dampingInput.addEventListener('input', (e) => physics.damping = parseFloat(e.target.value));
+    radiusInput.addEventListener('input', (e) => physics.radius = parseFloat(e.target.value));
+}
