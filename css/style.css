@@ -71,13 +71,14 @@ html {
 }
 
 .hidden-yt-frame {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
     width: 1px;
     height: 1px;
-    opacity: 0;
+    opacity: 0.01;
     pointer-events: none;
+    z-index: -10;
 }
 
 .corner-frame {
