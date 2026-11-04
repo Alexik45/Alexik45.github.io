@@ -1,4 +1,4 @@
-// Interactive Deformable Vector Grid & Shockwave Physics
+// Interactive Vector Grid Physics
 const bgCanvas = document.getElementById('warpGridCanvas');
 const bgCtx = bgCanvas.getContext('2d');
 
@@ -155,7 +155,7 @@ function renderGrid() {
 }
 renderGrid();
 
-// Audio Synth & Interface Feedback
+// Procedural Audio Engine
 let sfxActive = true;
 let crtActive = true;
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -190,7 +190,7 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// YouTube IFrame API Player & Custom Playlist
+// Background Stream Integration
 const playlist = [
     { title: "Patient A - Ado", id: "5oG_QnL8Gg8" },
     { title: "Raven Sky - Ado", id: "yW3eA3K3t30" },
@@ -279,7 +279,7 @@ volumeSlider.addEventListener('input', (e) => {
     }
 });
 
-// Hardware Oscilloscope (Default: AUDIO SYNC)
+// Hardware Oscilloscope
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
@@ -328,7 +328,6 @@ function renderScope() {
 
     if (mode === 'AUDIO SYNC') {
         if (isAudioPlaying) {
-            // Live multi-harmonic reactive wave simulation responding to playback
             const volFactor = currentVolume / 100;
             const bassKick = Math.sin(scopePhase * 2) > 0.8 ? 1.4 : 1.0;
             for (let x = 0; x < scopeCanvas.width; x++) {
@@ -341,7 +340,6 @@ function renderScope() {
                 else scopeCtx.lineTo(x, y);
             }
         } else {
-            // Idle sweep line when paused
             for (let x = 0; x < scopeCanvas.width; x++) {
                 const norm = (x / scopeCanvas.width) * Math.PI * 4;
                 const y = cy + Math.sin(norm + scopePhase) * 4 * Math.sin(norm * 0.2 + scopePhase * 0.2);
@@ -387,7 +385,7 @@ function renderScope() {
 }
 renderScope();
 
-// Project Details Database & Modal Controller
+// Project Database & Modal Controller
 const projectData = {
     homeserver: {
         id: "01_INFRA",
@@ -517,7 +515,7 @@ modalBackdrop.addEventListener('click', (e) => {
     if (e.target === modalBackdrop) closeProjectModal();
 });
 
-// Interactive Terminal CLI Drawer
+// Interactive Shell Drawer
 const cliDrawer = document.getElementById('cliDrawer');
 const cliToggle = document.getElementById('cliToggle');
 const cliInput = document.getElementById('cliInput');
@@ -581,7 +579,6 @@ if (cliInput) {
     });
 }
 
-// Global Shortcuts & Key Listener
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeProjectModal();
@@ -602,7 +599,7 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// Soundboard Controls & Arpeggiator
+// Soundboard Controls
 const pads = document.querySelectorAll('.audio-pad');
 pads.forEach(pad => {
     pad.addEventListener('pointerdown', () => {
@@ -635,7 +632,7 @@ if (shockwaveBtn) {
     });
 }
 
-// Session Uptime & Gateway Ping Tickers
+// Uptime & Ping Trackers
 const uptimeElement = document.getElementById('sessionUptime');
 let secondsElapsed = 0;
 
@@ -654,7 +651,7 @@ setInterval(() => {
     }
 }, 4000);
 
-// Global Dynamic Visit Counter
+// Visit Counter
 const visitCountEl = document.getElementById('visitCount');
 const INITIAL_OFFSET = 7;
 
@@ -671,7 +668,7 @@ async function fetchVisitCount() {
 }
 fetchVisitCount();
 
-// Click-to-Copy Discord ID
+// Clipboard Helper
 const copyDiscordBtn = document.getElementById('copyDiscordBtn');
 const copyBtnText = document.getElementById('copyBtnText');
 const DISCORD_USER_ID = '768033946666663946';
@@ -694,7 +691,7 @@ if (copyDiscordBtn) {
     });
 }
 
-// UI Toggles & Control Bindings
+// Toggle Bindings
 const soundBtn = document.getElementById('soundToggle');
 const crtBtn = document.getElementById('crtToggle');
 const crtOverlay = document.getElementById('crtOverlay');
