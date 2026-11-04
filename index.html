@@ -14,6 +14,8 @@
         <div class="grain-overlay"></div>
         <div class="crt-overlay active" id="crtOverlay"></div>
 
+        <audio id="bgAudio" crossorigin="anonymous" preload="auto"></audio>
+
         <!-- Header -->
         <header class="site-header">
             <div class="header-inner">
@@ -83,12 +85,30 @@
                         <div class="viewport-bar">
                             <span class="bar-title">realtime_scope.wasm</span>
                             <button id="waveModeToggle" class="scope-mode-btn" title="Click to cycle waveform generator">
-                                WAVE: <span id="waveModeLabel">SINE</span> ⟳
+                                MODE: <span id="waveModeLabel">AUDIO SYNC</span> ⟳
                             </button>
                         </div>
                         <canvas id="scopeCanvas" width="460" height="240"></canvas>
+                        
+                        <!-- Integrated Ado Background Player -->
+                        <div class="ado-player-bar">
+                            <div class="player-left">
+                                <button id="musicPlayBtn" class="player-btn" title="Play / Pause Ado stream">▶ PLAY</button>
+                                <button id="musicNextBtn" class="player-btn" title="Next track">⏭</button>
+                                <div class="track-info">
+                                    <span class="track-tag">ADO STREAM</span>
+                                    <span id="currentTrackTitle" class="track-name">Loading queue...</span>
+                                </div>
+                            </div>
+                            <div class="player-right">
+                                <span class="vol-label">VOL</span>
+                                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.15" class="vol-slider" title="Volume">
+                                <span id="volValue" class="vol-display">15%</span>
+                            </div>
+                        </div>
+
                         <div class="viewport-footer">
-                            <span class="footer-metric">SIGNAL: ACTIVE</span>
+                            <span class="footer-metric" id="scopeStatus">AUDIO: SYNCHRONIZED</span>
                             <span class="footer-metric" id="fpsCounter">60 FPS</span>
                         </div>
                     </div>
@@ -234,9 +254,27 @@
                         </div>
                     </article>
 
+                    <article class="project-card corner-frame interactive-card" data-project="portfolio">
+                        <div class="project-header">
+                            <span class="project-mono">05_CLIENT</span>
+                            <div class="project-tags">
+                                <span>HTML5</span>
+                                <span>WebAudio</span>
+                                <span>Canvas2D</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">This Personal Workspace Hub</h3>
+                        <p class="project-detail">
+                            Dependency-free reactive web workspace running Hooke's spring mesh physics, real-time oscilloscope FFT audio mapping, and terminal subsystems.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                        </div>
+                    </article>
+
                     <article class="project-card corner-frame wip-card">
                         <div class="project-header">
-                            <span class="project-mono">05_PIPELINE</span>
+                            <span class="project-mono">06_PIPELINE</span>
                             <div class="project-tags">
                                 <span>In Dev</span>
                                 <span>WIP</span>
