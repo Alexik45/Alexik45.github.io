@@ -1,4 +1,4 @@
-// Interactive Deformable Vector Grid
+// Interactive Deformable Vector Grid & Shockwave Physics
 const bgCanvas = document.getElementById('warpGridCanvas');
 const bgCtx = bgCanvas.getContext('2d');
 
@@ -17,8 +17,6 @@ let physics = {
 function resizeCanvas() {
     bgCanvas.width = window.innerWidth;
     bgCanvas.height = window.innerHeight;
-
-    // Scale spacing on small screens to maintain 60 FPS
     spacing = window.innerWidth < 680 ? 56 : 42;
     gridW = Math.ceil(bgCanvas.width / spacing) + 2;
     gridH = Math.ceil(bgCanvas.height / spacing) + 2;
@@ -50,9 +48,7 @@ function handlePointerMove(clientX, clientY) {
     mouse.y = clientY;
 }
 
-window.addEventListener('pointermove', (e) => {
-    handlePointerMove(e.clientX, e.clientY);
-});
+window.addEventListener('pointermove', (e) => handlePointerMove(e.clientX, e.clientY));
 
 window.addEventListener('touchmove', (e) => {
     if (e.touches.length > 0) {
@@ -68,6 +64,26 @@ function resetPointer() {
 window.addEventListener('pointerleave', resetPointer);
 window.addEventListener('pointerup', resetPointer);
 window.addEventListener('touchend', resetPointer);
+
+function triggerShockwave(x, y, power = 24, radius = 220) {
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const dx = p.x - x;
+        const dy = p.y - y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < radius && dist > 1) {
+            const factor = (1 - dist / radius) * power;
+            p.vx += (dx / dist) * factor;
+            p.vy += (dy / dist) * factor;
+        }
+    }
+}
+
+window.addEventListener('pointerdown', (e) => {
+    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'INPUT') {
+        triggerShockwave(e.clientX, e.clientY, 18, 180);
+    }
+});
 
 function stepPhysics() {
     for (let i = 0; i < points.length; i++) {
@@ -174,12 +190,26 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Oscilloscope Viewport Simulation
+// Multimode Oscilloscope Viewport
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
+const waveModeBtn = document.getElementById('waveModeToggle');
+const waveModeLabel = document.getElementById('waveModeLabel');
+
+const WAVE_MODES = ['SINE', 'SQUARE', 'NOISE', 'FM_CHIRP'];
+let currentWaveModeIndex = 0;
 let scopePhase = 0;
 let lastFrameTime = performance.now();
 const fpsElement = document.getElementById('fpsCounter');
+
+function cycleWaveMode() {
+    currentWaveModeIndex = (currentWaveModeIndex + 1) % WAVE_MODES.length;
+    waveModeLabel.textContent = WAVE_MODES[currentWaveModeIndex];
+    triggerTone(440 + currentWaveModeIndex * 110, 'triangle', 0.04, 0.04);
+}
+
+if (waveModeBtn) waveModeBtn.addEventListener('click', cycleWaveMode);
+if (scopeCanvas) scopeCanvas.addEventListener('click', cycleWaveMode);
 
 function renderScope() {
     const now = performance.now();
@@ -204,9 +234,24 @@ function renderScope() {
     scopeCtx.beginPath();
 
     const cy = scopeCanvas.height / 2;
+    const mode = WAVE_MODES[currentWaveModeIndex];
+
     for (let x = 0; x < scopeCanvas.width; x++) {
         const norm = (x / scopeCanvas.width) * Math.PI * 4;
-        const y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5) + (Math.random() - 0.5) * 1.5;
+        let y = cy;
+
+        if (mode === 'SINE') {
+            y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5);
+        } else if (mode === 'SQUARE') {
+            const raw = Math.sin(norm * 1.5 + scopePhase);
+            y = cy + (raw > 0 ? 30 : -30) + (Math.random() - 0.5) * 2;
+        } else if (mode === 'NOISE') {
+            y = cy + (Math.random() - 0.5) * 45 * Math.sin(norm * 0.5 + scopePhase);
+        } else if (mode === 'FM_CHIRP') {
+            const mod = Math.sin(norm * 0.2 + scopePhase) * 5;
+            y = cy + Math.sin(norm * mod + scopePhase * 2) * 30;
+        }
+
         if (x === 0) scopeCtx.moveTo(x, y);
         else scopeCtx.lineTo(x, y);
     }
@@ -328,16 +373,182 @@ document.querySelectorAll('.interactive-card').forEach(card => {
 });
 
 modalCloseBtn.addEventListener('click', closeProjectModal);
-
 modalBackdrop.addEventListener('click', (e) => {
     if (e.target === modalBackdrop) closeProjectModal();
 });
 
+// Interactive Terminal CLI Drawer
+const cliDrawer = document.getElementById('cliDrawer');
+const cliToggle = document.getElementById('cliToggle');
+const cliInput = document.getElementById('cliInput');
+const cliOutput = document.getElementById('cliOutput');
+
+function toggleCli() {
+    const isActive = cliDrawer.classList.toggle('active');
+    cliToggle.setAttribute('data-state', isActive ? 'on' : 'off');
+    triggerTone(isActive ? 640 : 380, 'sine', 0.04, 0.03);
+    if (isActive) {
+        setTimeout(() => cliInput.focus(), 50);
+    }
+}
+
+if (cliToggle) cliToggle.addEventListener('click', toggleCli);
+
+function printCliLine(text, highlight = false) {
+    const line = document.createElement('div');
+    if (highlight) line.className = 'cli-highlight';
+    line.innerHTML = text;
+    cliOutput.appendChild(line);
+    cliOutput.scrollTop = cliOutput.scrollHeight;
+}
+
+if (cliInput) {
+    cliInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const raw = cliInput.value.trim().toLowerCase();
+            cliInput.value = '';
+            if (!raw) return;
+
+            printCliLine(`alex@box:~$ ${raw}`);
+
+            if (raw === 'help') {
+                printCliLine('Commands: status, server, stack, ping, ado, clear, exit');
+            } else if (raw === 'status') {
+                printCliLine('SYS: Ubuntu Server 24/7 | CRT: active | SFX: active');
+            } else if (raw === 'server') {
+                printCliLine('Box: CasaOS / Docker / Tailscale / Seafile / PM2');
+            } else if (raw === 'stack') {
+                printCliLine('Languages: Python, C, C#, JavaScript, HTML, CSS, SQL');
+            } else if (raw === 'ping') {
+                printCliLine(`Latency to gateway: ${Math.floor(18 + Math.random() * 8)}ms`);
+            } else if (raw === 'ado') {
+                printCliLine('Now playing in the background: Ado - Usseewa / Show / Gira Gira');
+                triggerTone(523.25, 'triangle', 0.12, 0.06);
+            } else if (raw === 'clear') {
+                cliOutput.innerHTML = '';
+            } else if (raw === 'exit') {
+                toggleCli();
+            } else {
+                printCliLine(`Command not found: ${raw}. Type 'help'.`);
+            }
+        }
+    });
+}
+
+// Global Shortcuts & Key Listener
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeProjectModal();
+    if (e.key === 'Escape') {
+        closeProjectModal();
+        if (cliDrawer.classList.contains('active')) toggleCli();
+    }
+    if (e.key === '`' || e.key === '~') {
+        e.preventDefault();
+        toggleCli();
+    }
+    if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        const pad = document.querySelector(`.audio-pad[data-key="${e.key}"]`);
+        if (pad && document.activeElement !== cliInput) {
+            const freq = parseFloat(pad.dataset.freq);
+            pad.classList.add('pad-active');
+            triggerTone(freq, 'triangle', 0.35, 0.06);
+            setTimeout(() => pad.classList.remove('pad-active'), 150);
+        }
+    }
 });
 
-// Controls & Audio Bindings
+// Soundboard Controls & Arpeggiator
+const pads = document.querySelectorAll('.audio-pad');
+pads.forEach(pad => {
+    pad.addEventListener('pointerdown', () => {
+        const freq = parseFloat(pad.dataset.freq);
+        triggerTone(freq, 'triangle', 0.35, 0.06);
+    });
+});
+
+const arpBtn = document.getElementById('arpBtn');
+if (arpBtn) {
+    arpBtn.addEventListener('click', () => {
+        const scale = [130.81, 164.81, 196.00, 246.94, 293.66, 392.00];
+        scale.forEach((freq, idx) => {
+            setTimeout(() => {
+                triggerTone(freq, 'triangle', 0.18, 0.05);
+                if (pads[idx]) {
+                    pads[idx].classList.add('pad-active');
+                    setTimeout(() => pads[idx].classList.remove('pad-active'), 120);
+                }
+            }, idx * 110);
+        });
+    });
+}
+
+const shockwaveBtn = document.getElementById('shockwaveBtn');
+if (shockwaveBtn) {
+    shockwaveBtn.addEventListener('click', () => {
+        triggerShockwave(window.innerWidth / 2, window.innerHeight / 2, 35, 300);
+        triggerTone(220, 'triangle', 0.2, 0.06);
+    });
+}
+
+// Session Uptime & Gateway Ping Tickers
+const uptimeElement = document.getElementById('sessionUptime');
+let secondsElapsed = 0;
+
+setInterval(() => {
+    secondsElapsed++;
+    const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+    const secs = String(secondsElapsed % 60).padStart(2, '0');
+    if (uptimeElement) uptimeElement.textContent = `${mins}:${secs}`;
+}, 1000);
+
+const pingBadge = document.getElementById('pingBadge');
+setInterval(() => {
+    if (pingBadge) {
+        const jitter = Math.floor(19 + Math.random() * 8);
+        pingBadge.textContent = `PING: ${jitter}ms`;
+    }
+}, 4000);
+
+// Global Dynamic Visit Counter
+const visitCountEl = document.getElementById('visitCount');
+const INITIAL_OFFSET = 7;
+
+async function fetchVisitCount() {
+    try {
+        const res = await fetch('https://api.counterapi.dev/v1/alex1k45_portfolio_hub/visits/up');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const total = (data.count || 0) + INITIAL_OFFSET;
+        if (visitCountEl) visitCountEl.textContent = `VISITS: ${String(total).padStart(4, '0')}`;
+    } catch (_) {
+        if (visitCountEl) visitCountEl.textContent = `VISITS: ${String(INITIAL_OFFSET + 1).padStart(4, '0')}`;
+    }
+}
+fetchVisitCount();
+
+// Click-to-Copy Discord ID
+const copyDiscordBtn = document.getElementById('copyDiscordBtn');
+const copyBtnText = document.getElementById('copyBtnText');
+const DISCORD_USER_ID = '768033946666663946';
+
+if (copyDiscordBtn) {
+    copyDiscordBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(DISCORD_USER_ID);
+            copyBtnText.textContent = 'COPIED (76803...)!';
+            copyDiscordBtn.classList.add('copied');
+            triggerTone(950, 'sine', 0.08, 0.05);
+
+            setTimeout(() => {
+                copyBtnText.textContent = 'Copy Discord ID';
+                copyDiscordBtn.classList.remove('copied');
+            }, 2000);
+        } catch (_) {
+            copyBtnText.textContent = '768033946666663946';
+        }
+    });
+}
+
+// UI Toggles & Control Bindings
 const soundBtn = document.getElementById('soundToggle');
 const crtBtn = document.getElementById('crtToggle');
 const crtOverlay = document.getElementById('crtOverlay');
@@ -353,14 +564,6 @@ crtBtn.addEventListener('click', () => {
     crtOverlay.classList.toggle('active', crtActive);
     crtBtn.setAttribute('data-state', crtActive ? 'on' : 'off');
     triggerTone(crtActive ? 520 : 330, 'triangle', 0.06, 0.03);
-});
-
-document.querySelectorAll('.audio-pad').forEach(pad => {
-    const playPadTone = () => {
-        const freq = parseFloat(pad.dataset.freq);
-        triggerTone(freq, 'triangle', 0.35, 0.06);
-    };
-    pad.addEventListener('pointerdown', playPadTone);
 });
 
 document.querySelectorAll('a, button, input, .interactive-card').forEach(el => {
