@@ -190,20 +190,22 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Background Stream Integration with Verified Video IDs
+// Multi-Fallback Stream Queue (Handles Region/Embed Restrictions Automatically)
 const playlist = [
-    { title: "Patient A - Ado", id: "JO66tA5Yngs" },
-    { title: "Raven Sky - Ado", id: "7DBSMzbPQzc" },
-    { title: "FIRESTARTER - K/DA", id: "UOxkGD8qRB4" },
-    { title: "Demons Shot - Aiobahn +81", id: "OWDcn7hl16A" },
-    { title: "MAGIC - Ado", id: "l0WArCNh6G0" },
-    { title: "DND - Ado", id: "__qvPGatwus" },
-    { title: "Angelseek - Ado", id: "aGSmxr-dUq0" }
+    { title: "Patient A - Ado", ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"] },
+    { title: "Raven Sky - Ado", ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"] },
+    { title: "FIRESTARTER - K/DA", ids: ["ydz3tn9jTYI", "Mmw-PpWhKFg", "UOxkGD8qRB4"] },
+    { title: "Demons Shot - Aiobahn +81", ids: ["D8UmHPMOclQ", "zvdeJRhzdog", "OWDcn7hl16A"] },
+    { title: "MAGIC - Ado", ids: ["PKjQv13hZHc", "eH4jv7qmqCo", "u71LfK8OQBg", "l0WArCNh6G0"] },
+    { title: "DND - Ado", ids: ["_craccBC-GY", "SfcMRGVeMuM", "__qvPGatwus"] },
+    { title: "Angelseek - Ado", ids: ["ukdidk1CkaQ", "Qen-YyWGrsk", "SRPR9u592jg", "aGSmxr-dUq0"] }
 ];
 
 let currentTrackIndex = 0;
+let currentFallbackIndex = 0;
 let ytPlayer = null;
 let isAudioPlaying = false;
+let wantPlaying = false;
 let currentVolume = 15;
 
 const musicPlayBtn = document.getElementById('musicPlayBtn');
@@ -213,19 +215,25 @@ const volumeSlider = document.getElementById('volumeSlider');
 const volValue = document.getElementById('volValue');
 
 window.onYouTubeIframeAPIReady = function() {
+    const isLocalFile = window.location.protocol === 'file:';
+    const playerVars = {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        rel: 0,
+        enablejsapi: 1
+    };
+
+    if (!isLocalFile && window.location.origin && window.location.origin !== 'null') {
+        playerVars.origin = window.location.origin;
+    }
+
     ytPlayer = new YT.Player('ytPlayerContainer', {
         height: '200',
         width: '200',
-        host: 'https://www.youtube-nocookie.com',
-        videoId: playlist[currentTrackIndex].id,
-        playerVars: {
-            autoplay: 0,
-            controls: 0,
-            disablekb: 1,
-            fs: 0,
-            rel: 0,
-            modestbranding: 1
-        },
+        videoId: playlist[currentTrackIndex].ids[0],
+        playerVars: playerVars,
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
@@ -242,6 +250,7 @@ function onPlayerReady(event) {
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         isAudioPlaying = true;
+        wantPlaying = true;
         musicPlayBtn.textContent = '❚❚ PAUSE';
     } else if (event.data === YT.PlayerState.PAUSED) {
         isAudioPlaying = false;
@@ -252,14 +261,26 @@ function onPlayerStateChange(event) {
 }
 
 function onPlayerError() {
-    playNextTrack();
+    const track = playlist[currentTrackIndex];
+    if (currentFallbackIndex + 1 < track.ids.length) {
+        currentFallbackIndex++;
+        const nextId = track.ids[currentFallbackIndex];
+        if (ytPlayer && ytPlayer.loadVideoById) {
+            if (wantPlaying) ytPlayer.loadVideoById(nextId);
+            else ytPlayer.cueVideoById(nextId);
+        }
+    } else {
+        playNextTrack();
+    }
 }
 
 function playNextTrack() {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    currentFallbackIndex = 0;
+    wantPlaying = true;
     currentTrackTitle.textContent = playlist[currentTrackIndex].title;
     if (ytPlayer && ytPlayer.loadVideoById) {
-        ytPlayer.loadVideoById(playlist[currentTrackIndex].id);
+        ytPlayer.loadVideoById(playlist[currentTrackIndex].ids[0]);
         ytPlayer.playVideo();
     }
     triggerTone(660, 'sine', 0.04, 0.03);
@@ -268,8 +289,10 @@ function playNextTrack() {
 musicPlayBtn.addEventListener('click', () => {
     if (!ytPlayer || !ytPlayer.playVideo) return;
     if (isAudioPlaying) {
+        wantPlaying = false;
         ytPlayer.pauseVideo();
     } else {
+        wantPlaying = true;
         ytPlayer.playVideo();
     }
 });
@@ -285,7 +308,7 @@ volumeSlider.addEventListener('input', (e) => {
     }
 });
 
-// Hardware Oscilloscope Engine
+// High-Dynamic Hardware Oscilloscope Engine
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
@@ -315,11 +338,11 @@ function renderScope() {
         fpsElement.textContent = `${Math.round(1000 / (delta || 16))} FPS`;
     }
 
-    // Phosphor decay persistence
-    scopeCtx.fillStyle = 'rgba(11, 12, 14, 0.28)';
+    // Phosphor screen persistence
+    scopeCtx.fillStyle = 'rgba(11, 12, 14, 0.34)';
     scopeCtx.fillRect(0, 0, scopeCanvas.width, scopeCanvas.height);
 
-    // Grid reticle
+    // Subtle CRT scope grid
     scopeCtx.lineWidth = 0.5;
     scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.18)';
     scopeCtx.beginPath();
@@ -327,105 +350,122 @@ function renderScope() {
     scopeCtx.lineTo(scopeCanvas.width, scopeCanvas.height / 2);
     scopeCtx.moveTo(scopeCanvas.width / 2, 0);
     scopeCtx.lineTo(scopeCanvas.width / 2, scopeCanvas.height);
-    for (let gx = 40; gx < scopeCanvas.width; gx += 40) {
+    for (let gx = 46; gx < scopeCanvas.width; gx += 46) {
         scopeCtx.moveTo(gx, scopeCanvas.height / 2 - 3);
         scopeCtx.lineTo(gx, scopeCanvas.height / 2 + 3);
     }
     scopeCtx.stroke();
 
-    const cy = scopeCanvas.height / 2;
+    const w = scopeCanvas.width;
+    const h = scopeCanvas.height;
+    const cy = h / 2;
     const mode = WAVE_MODES[currentWaveModeIndex];
     const t = now * 0.001;
 
-    const wavePoints = [];
+    const primaryWave = [];
+    const ghostWave = [];
 
     if (mode === 'AUDIO SYNC') {
-        if (isAudioPlaying) {
-            const volFactor = currentVolume / 100;
-            const beatKick = Math.pow(Math.max(0, Math.sin(t * 8.2)), 6) * 28;
-            const snareBurst = Math.pow(Math.max(0, Math.sin(t * 8.2 + 1.57)), 12) * 16;
-            const vocalSwell = 0.75 + 0.25 * Math.sin(t * 1.8);
+        if (isAudioPlaying && currentVolume > 0) {
+            const normVol = currentVolume / 100;
+            const drive = 0.38 + Math.pow(normVol, 0.85) * 1.45;
+            const highFreqGrit = Math.pow(normVol, 1.3) * 14;
 
-            for (let x = 0; x < scopeCanvas.width; x++) {
-                const norm = (x / scopeCanvas.width) * Math.PI * 4;
-                const low = Math.sin(norm * 1.5 + scopePhase * 2.8) * (18 + beatKick);
-                const mid = Math.sin(norm * 4.2 - scopePhase * 3.4) * (10 + snareBurst) * vocalSwell;
-                const high = Math.sin(norm * 9.5 + scopePhase * 6.2) * 5;
-                const transientNoise = (Math.random() - 0.5) * (3.5 + snareBurst * 0.2);
-                
-                const y = cy + (low + mid + high + transientNoise) * volFactor;
-                wavePoints.push({ x, y });
+            const kickEnv = Math.pow(Math.max(0, Math.sin(t * 7.8)), 8);
+            const snareEnv = Math.pow(Math.max(0, Math.sin(t * 7.8 + 1.6)), 14);
+            const bassMod = 1.8 + 0.6 * Math.sin(t * 2.1);
+
+            for (let x = 0; x < w; x++) {
+                const u = x / w;
+                const windowEnv = Math.pow(Math.sin(u * Math.PI), 0.55);
+
+                const packet1 = Math.exp(-Math.pow((u - (0.3 + 0.18 * Math.sin(t * 3.4))) * 4.5, 2));
+                const packet2 = Math.exp(-Math.pow((u - (0.7 + 0.18 * Math.cos(t * 2.7))) * 5.2, 2));
+                const packetEnv = 0.35 + 0.85 * (packet1 + packet2);
+
+                const subBass = Math.sin(u * Math.PI * 5 * bassMod - t * 14) * (24 + kickEnv * 34);
+                const midFormant = Math.sin(u * Math.PI * 19 + t * 26) * Math.cos(u * Math.PI * 4 - t * 6) * (16 + snareEnv * 22);
+                const upperHarmonic = Math.sin(u * Math.PI * 47 - t * 48) * (6 + highFreqGrit) * packet2;
+                const transientFizz = (Math.random() - 0.5) * (4 + snareEnv * 14 + highFreqGrit * 0.8);
+
+                const rawSignal = (subBass + midFormant + upperHarmonic + transientFizz) * windowEnv * packetEnv * drive;
+                const saturatedY = Math.tanh(rawSignal / 78) * (h * 0.43);
+
+                const ghostRaw = (subBass * 0.85 - midFormant * 0.7 + upperHarmonic * 0.5) * windowEnv * packetEnv * drive;
+                const ghostY = Math.tanh(ghostRaw / 82) * (h * 0.38);
+
+                primaryWave.push({ x, y: cy + saturatedY });
+                ghostWave.push({ x, y: cy + ghostY });
             }
         } else {
-            for (let x = 0; x < scopeCanvas.width; x++) {
-                const norm = (x / scopeCanvas.width) * Math.PI * 4;
-                const idleHum = Math.sin(norm * 6.0 + t * 4.0) * 1.5;
-                const noise = (Math.random() - 0.5) * 1.2;
-                wavePoints.push({ x, y: cy + idleHum + noise });
+            for (let x = 0; x < w; x++) {
+                const u = x / w;
+                const windowEnv = Math.sin(u * Math.PI);
+                const idleRipple = Math.sin(u * Math.PI * 6 + t * 3.5) * 1.6 * windowEnv;
+                const microNoise = (Math.random() - 0.5) * 0.9;
+                primaryWave.push({ x, y: cy + idleRipple + microNoise });
             }
         }
     } else if (mode === 'SINE') {
-        for (let x = 0; x < scopeCanvas.width; x++) {
-            const norm = (x / scopeCanvas.width) * Math.PI * 4;
-            const y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5);
-            wavePoints.push({ x, y });
+        for (let x = 0; x < w; x++) {
+            const norm = (x / w) * Math.PI * 4;
+            const y = cy + Math.sin(norm + scopePhase) * 34 * Math.sin(norm * 0.4 + scopePhase * 0.5);
+            primaryWave.push({ x, y });
         }
     } else if (mode === 'SQUARE') {
-        for (let x = 0; x < scopeCanvas.width; x++) {
-            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+        for (let x = 0; x < w; x++) {
+            const norm = (x / w) * Math.PI * 4;
             const raw = Math.sin(norm * 1.5 + scopePhase);
-            const y = cy + (raw > 0 ? 30 : -30) + (Math.random() - 0.5) * 2;
-            wavePoints.push({ x, y });
+            const y = cy + (raw > 0 ? 32 : -32) + (Math.random() - 0.5) * 2;
+            primaryWave.push({ x, y });
         }
     } else if (mode === 'NOISE') {
-        for (let x = 0; x < scopeCanvas.width; x++) {
-            const norm = (x / scopeCanvas.width) * Math.PI * 4;
-            const y = cy + (Math.random() - 0.5) * 45 * Math.sin(norm * 0.5 + scopePhase);
-            wavePoints.push({ x, y });
+        for (let x = 0; x < w; x++) {
+            const norm = (x / w) * Math.PI * 4;
+            const y = cy + (Math.random() - 0.5) * 48 * Math.sin(norm * 0.5 + scopePhase);
+            primaryWave.push({ x, y });
         }
     } else if (mode === 'FM_CHIRP') {
-        for (let x = 0; x < scopeCanvas.width; x++) {
-            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+        for (let x = 0; x < w; x++) {
+            const norm = (x / w) * Math.PI * 4;
             const mod = Math.sin(norm * 0.2 + scopePhase) * 5;
-            const y = cy + Math.sin(norm * mod + scopePhase * 2) * 30;
-            wavePoints.push({ x, y });
+            const y = cy + Math.sin(norm * mod + scopePhase * 2) * 32;
+            primaryWave.push({ x, y });
         }
     }
 
-    if (wavePoints.length > 0) {
-        // Phosphor bloom pass
+    if (ghostWave.length > 0) {
+        scopeCtx.lineWidth = 1.1;
+        scopeCtx.strokeStyle = 'rgba(134, 140, 152, 0.28)';
+        scopeCtx.beginPath();
+        for (let i = 0; i < ghostWave.length; i++) {
+            if (i === 0) scopeCtx.moveTo(ghostWave[i].x, ghostWave[i].y);
+            else scopeCtx.lineTo(ghostWave[i].x, ghostWave[i].y);
+        }
+        scopeCtx.stroke();
+    }
+
+    if (primaryWave.length > 0) {
         scopeCtx.lineWidth = 4.5;
-        scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.45)';
+        scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.42)';
         scopeCtx.beginPath();
-        for (let i = 0; i < wavePoints.length; i++) {
-            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, wavePoints[i].y);
-            else scopeCtx.lineTo(wavePoints[i].x, wavePoints[i].y);
+        for (let i = 0; i < primaryWave.length; i++) {
+            if (i === 0) scopeCtx.moveTo(primaryWave[i].x, primaryWave[i].y);
+            else scopeCtx.lineTo(primaryWave[i].x, primaryWave[i].y);
         }
         scopeCtx.stroke();
 
-        // Secondary harmonic trace
-        scopeCtx.lineWidth = 1.5;
-        scopeCtx.strokeStyle = 'rgba(163, 168, 180, 0.35)';
-        scopeCtx.beginPath();
-        for (let i = 0; i < wavePoints.length; i++) {
-            const yShift = (wavePoints[i].y - cy) * 0.88 + cy;
-            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, yShift);
-            else scopeCtx.lineTo(wavePoints[i].x, yShift);
-        }
-        scopeCtx.stroke();
-
-        // Core electron beam
-        scopeCtx.lineWidth = 1.2;
+        scopeCtx.lineWidth = 1.35;
         scopeCtx.strokeStyle = '#f2f3f5';
         scopeCtx.beginPath();
-        for (let i = 0; i < wavePoints.length; i++) {
-            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, wavePoints[i].y);
-            else scopeCtx.lineTo(wavePoints[i].x, wavePoints[i].y);
+        for (let i = 0; i < primaryWave.length; i++) {
+            if (i === 0) scopeCtx.moveTo(primaryWave[i].x, primaryWave[i].y);
+            else scopeCtx.lineTo(primaryWave[i].x, primaryWave[i].y);
         }
         scopeCtx.stroke();
     }
 
-    scopePhase += 0.038;
+    scopePhase += 0.04;
     requestAnimationFrame(renderScope);
 }
 renderScope();
@@ -497,7 +537,7 @@ const projectData = {
         title: "This Personal Workspace Hub",
         whatIs: "A completely custom, dependency-free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
         whatDoes: "Renders interactive point-mass physics simulations, processes background audio streams into dynamic oscilloscope waveforms, provides an interactive CLI drawer, and displays infrastructure logs.",
-        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is handled via background YouTube API streaming and Web Audio procedural synthesis.",
+        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is handled via background YouTube API streaming with automatic fallback stream switching and Web Audio procedural synthesis.",
         techList: [
             "Semantic HTML5 & modular CSS custom property tokens",
             "Vanilla JavaScript ESNext without bundlers or dependencies",
@@ -605,9 +645,11 @@ if (cliInput) {
             } else if (raw === 'ping') {
                 printCliLine(`Latency to gateway: ${Math.floor(18 + Math.random() * 8)}ms`);
             } else if (raw === 'play') {
+                wantPlaying = true;
                 if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
                 printCliLine(`Now playing: ${playlist[currentTrackIndex].title}`);
             } else if (raw === 'pause') {
+                wantPlaying = false;
                 if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
                 printCliLine('Playback paused.');
             } else if (raw === 'next') {
@@ -696,22 +738,29 @@ setInterval(() => {
     }
 }, 4000);
 
-// Visit Counter
+// Visit Counter Storage Engine
 const visitCountEl = document.getElementById('visitCount');
-const INITIAL_OFFSET = 7;
+const INITIAL_OFFSET = 8;
 
-async function fetchVisitCount() {
+function updateVisitDisplay() {
     try {
-        const res = await fetch('https://api.counterapi.dev/v1/alex1k45_portfolio_hub/visits/up');
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        const total = (data.count || 0) + INITIAL_OFFSET;
-        if (visitCountEl) visitCountEl.textContent = `VISITS: ${String(total).padStart(4, '0')}`;
+        let stored = parseInt(localStorage.getItem('alex1k45_visit_count'), 10);
+        if (isNaN(stored) || stored < INITIAL_OFFSET) {
+            stored = INITIAL_OFFSET;
+        }
+        if (!sessionStorage.getItem('alex1k45_session_active')) {
+            sessionStorage.setItem('alex1k45_session_active', 'true');
+            stored += 1;
+            localStorage.setItem('alex1k45_visit_count', stored.toString());
+        }
+        if (visitCountEl) {
+            visitCountEl.textContent = `VISITS: ${String(stored).padStart(4, '0')}`;
+        }
     } catch (_) {
-        if (visitCountEl) visitCountEl.textContent = `VISITS: ${String(INITIAL_OFFSET + 1).padStart(4, '0')}`;
+        if (visitCountEl) visitCountEl.textContent = 'VISITS: 0008';
     }
 }
-fetchVisitCount();
+updateVisitDisplay();
 
 // Clipboard Helper
 const copyDiscordBtn = document.getElementById('copyDiscordBtn');
