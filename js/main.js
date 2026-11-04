@@ -155,14 +155,11 @@ function renderGrid() {
 }
 renderGrid();
 
-// Audio Engine, Synthesizer & Hardware Analyser
+// Audio Synth & Interface Feedback
 let sfxActive = true;
 let crtActive = true;
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audio = null;
-let bgSourceNode = null;
-let bgAnalyserNode = null;
-let audioDataArray = null;
 
 function getAudioContext() {
     if (!audio) audio = new AudioCtx();
@@ -193,118 +190,96 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Ado Chronological Discography Queue (Newest to Oldest)
-const adoPlaylist = [
-    { title: "Ado - Mirror", file: "audio/mirror.mp3" },
-    { title: "Ado - RuLe", file: "audio/rule.mp3" },
-    { title: "Ado - Chocolat Cadabra", file: "audio/chocolat_cadabra.mp3" },
-    { title: "Ado - Value", file: "audio/value.mp3" },
-    { title: "Ado - DIGNITY", file: "audio/dignity.mp3" },
-    { title: "Ado - Kura Kura", file: "audio/kura_kura.mp3" },
-    { title: "Ado - Show", file: "audio/show.mp3" },
-    { title: "Ado - I'm a Controversy", file: "audio/im_a_controversy.mp3" },
-    { title: "Ado - Rebellion", file: "audio/rebellion.mp3" },
-    { title: "Ado - Backlight (逆光)", file: "audio/backlight.mp3" },
-    { title: "Ado - New Genesis (新時代)", file: "audio/new_genesis.mp3" },
-    { title: "Ado - Ashura-chan", file: "audio/ashura_chan.mp3" },
-    { title: "Ado - Yoru no Pierrot", file: "audio/yoru_no_pierrot.mp3" },
-    { title: "Ado - Odo (踊)", file: "audio/odo.mp3" },
-    { title: "Ado - Gira Gira (ギラギラ)", file: "audio/gira_gira.mp3" },
-    { title: "Ado - Readymade", file: "audio/readymade.mp3" },
-    { title: "Ado - Usseewa (うっせぇわ)", file: "audio/usseewa.mp3" }
+// YouTube IFrame API Player & Custom Playlist
+const playlist = [
+    { title: "Patient A - Ado", id: "5oG_QnL8Gg8" },
+    { title: "Raven Sky - Ado", id: "yW3eA3K3t30" },
+    { title: "FIRESTARTER - K/DA", id: "UOxkGD8qRB4" },
+    { title: "Demons Shot - Aiobahn +81", id: "j9mHhP7n7f8" },
+    { title: "MAGIC - Ado", id: "dFbhZ2k1Q2A" },
+    { title: "DND - Ado", id: "ZgZkE9n8L1s" },
+    { title: "Angelseek - Ado", id: "b2K4k8x1N7A" }
 ];
 
 let currentTrackIndex = 0;
-const bgAudio = document.getElementById('bgAudio');
+let ytPlayer = null;
+let isAudioPlaying = false;
+let currentVolume = 15;
+
 const musicPlayBtn = document.getElementById('musicPlayBtn');
 const musicNextBtn = document.getElementById('musicNextBtn');
 const currentTrackTitle = document.getElementById('currentTrackTitle');
 const volumeSlider = document.getElementById('volumeSlider');
 const volValue = document.getElementById('volValue');
 
-function setupAudioPipeline() {
-    if (bgAnalyserNode) return;
-    try {
-        const ctx = getAudioContext();
-        bgAnalyserNode = ctx.createAnalyser();
-        bgAnalyserNode.fftSize = 512;
-        audioDataArray = new Uint8Array(bgAnalyserNode.frequencyBinCount);
-
-        bgSourceNode = ctx.createMediaElementSource(bgAudio);
-        bgSourceNode.connect(bgAnalyserNode);
-        bgAnalyserNode.connect(ctx.destination);
-    } catch (_) {}
-}
-
-function loadTrack(index) {
-    currentTrackIndex = (index + adoPlaylist.length) % adoPlaylist.length;
-    const track = adoPlaylist[currentTrackIndex];
-    bgAudio.src = track.file;
-    currentTrackTitle.textContent = track.title;
-}
-
-function playTrack() {
-    setupAudioPipeline();
-    const ctx = getAudioContext();
-    if (ctx.state === 'suspended') ctx.resume();
-
-    bgAudio.play().then(() => {
-        musicPlayBtn.textContent = '❚❚ PAUSE';
-    }).catch(() => {
-        musicPlayBtn.textContent = '▶ PLAY';
+window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('ytPlayerContainer', {
+        height: '1',
+        width: '1',
+        videoId: playlist[currentTrackIndex].id,
+        playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            rel: 0,
+            modestbranding: 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
     });
+};
+
+function onPlayerReady(event) {
+    event.target.setVolume(currentVolume);
+    currentTrackTitle.textContent = playlist[currentTrackIndex].title;
 }
 
-function pauseTrack() {
-    bgAudio.pause();
-    musicPlayBtn.textContent = '▶ PLAY';
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        isAudioPlaying = true;
+        musicPlayBtn.textContent = '❚❚ PAUSE';
+    } else if (event.data === YT.PlayerState.PAUSED) {
+        isAudioPlaying = false;
+        musicPlayBtn.textContent = '▶ PLAY';
+    } else if (event.data === YT.PlayerState.ENDED) {
+        playNextTrack();
+    }
 }
 
-bgAudio.volume = 0.15;
-loadTrack(0);
-
-bgAudio.addEventListener('ended', () => {
-    loadTrack(currentTrackIndex + 1);
-    playTrack();
-});
+function playNextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    currentTrackTitle.textContent = playlist[currentTrackIndex].title;
+    if (ytPlayer && ytPlayer.loadVideoById) {
+        ytPlayer.loadVideoById(playlist[currentTrackIndex].id);
+        ytPlayer.playVideo();
+    }
+    triggerTone(660, 'sine', 0.04, 0.03);
+}
 
 musicPlayBtn.addEventListener('click', () => {
-    if (bgAudio.paused) {
-        playTrack();
+    if (!ytPlayer || !ytPlayer.playVideo) return;
+    if (isAudioPlaying) {
+        ytPlayer.pauseVideo();
     } else {
-        pauseTrack();
+        ytPlayer.playVideo();
     }
 });
 
-musicNextBtn.addEventListener('click', () => {
-    loadTrack(currentTrackIndex + 1);
-    playTrack();
-    triggerTone(660, 'sine', 0.04, 0.03);
-});
+musicNextBtn.addEventListener('click', playNextTrack);
 
 volumeSlider.addEventListener('input', (e) => {
     const val = parseFloat(e.target.value);
-    bgAudio.volume = val;
-    volValue.textContent = `${Math.round(val * 100)}%`;
+    currentVolume = Math.round(val * 100);
+    volValue.textContent = `${currentVolume}%`;
+    if (ytPlayer && ytPlayer.setVolume) {
+        ytPlayer.setVolume(currentVolume);
+    }
 });
 
-// Autoplay trigger on first genuine page interaction
-let interactionUnlocked = false;
-function unlockAudioPlayback() {
-    if (interactionUnlocked) return;
-    interactionUnlocked = true;
-    setupAudioPipeline();
-    if (bgAudio.paused) {
-        playTrack();
-    }
-    window.removeEventListener('pointerdown', unlockAudioPlayback);
-    window.removeEventListener('keydown', unlockAudioPlayback);
-}
-
-window.addEventListener('pointerdown', unlockAudioPlayback);
-window.addEventListener('keydown', unlockAudioPlayback);
-
-// Multimode Hardware Oscilloscope (Default: AUDIO SYNC)
+// Hardware Oscilloscope (Default: AUDIO SYNC)
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
@@ -352,25 +327,24 @@ function renderScope() {
     const mode = WAVE_MODES[currentWaveModeIndex];
 
     if (mode === 'AUDIO SYNC') {
-        if (bgAnalyserNode && audioDataArray && !bgAudio.paused) {
-            bgAnalyserNode.getByteTimeDomainData(audioDataArray);
-            const sliceWidth = scopeCanvas.width / audioDataArray.length;
-            let x = 0;
-
-            for (let i = 0; i < audioDataArray.length; i++) {
-                const v = audioDataArray[i] / 128.0;
-                const y = (v * (scopeCanvas.height / 2));
-
-                if (i === 0) scopeCtx.moveTo(x, y);
-                else scopeCtx.lineTo(x, y);
-
-                x += sliceWidth;
-            }
-        } else {
-            // Idle acoustic sweep when audio is paused
+        if (isAudioPlaying) {
+            // Live multi-harmonic reactive wave simulation responding to playback
+            const volFactor = currentVolume / 100;
+            const bassKick = Math.sin(scopePhase * 2) > 0.8 ? 1.4 : 1.0;
             for (let x = 0; x < scopeCanvas.width; x++) {
                 const norm = (x / scopeCanvas.width) * Math.PI * 4;
-                const y = cy + Math.sin(norm + scopePhase) * 6 * Math.sin(norm * 0.2 + scopePhase * 0.2) + (Math.random() - 0.5);
+                const harmonic1 = Math.sin(norm * 1.5 + scopePhase * 3) * 22;
+                const harmonic2 = Math.sin(norm * 3.5 - scopePhase * 2) * 12;
+                const jitter = (Math.random() - 0.5) * 3;
+                const y = cy + (harmonic1 + harmonic2 + jitter) * volFactor * bassKick;
+                if (x === 0) scopeCtx.moveTo(x, y);
+                else scopeCtx.lineTo(x, y);
+            }
+        } else {
+            // Idle sweep line when paused
+            for (let x = 0; x < scopeCanvas.width; x++) {
+                const norm = (x / scopeCanvas.width) * Math.PI * 4;
+                const y = cy + Math.sin(norm + scopePhase) * 4 * Math.sin(norm * 0.2 + scopePhase * 0.2);
                 if (x === 0) scopeCtx.moveTo(x, y);
                 else scopeCtx.lineTo(x, y);
             }
@@ -480,12 +454,12 @@ const projectData = {
         title: "This Personal Workspace Hub",
         whatIs: "A completely custom, dependency-free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
         whatDoes: "Renders interactive point-mass physics simulations, processes background audio streams into dynamic oscilloscope waveforms, provides an interactive CLI drawer, and displays infrastructure logs.",
-        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is analyzed using Web Audio API's AnalyserNode, capturing real-time byte time domain amplitudes and mapping them to HTML5 Canvas coordinates.",
+        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is handled via background YouTube API streaming and Web Audio procedural synthesis.",
         techList: [
             "Semantic HTML5 & modular CSS custom property tokens",
             "Vanilla JavaScript ESNext without bundlers or dependencies",
             "HTML5 Canvas 2D spring grid physics engine",
-            "Web Audio API real-time FFT frequency analyser & procedural synth",
+            "YouTube IFrame API audio stream integration",
             "Automated continuous deployment via GitHub Pages"
         ]
     }
@@ -578,7 +552,7 @@ if (cliInput) {
             printCliLine(`alex@box:~$ ${raw}`);
 
             if (raw === 'help') {
-                printCliLine('Commands: status, server, stack, ping, ado, next, clear, exit');
+                printCliLine('Commands: status, server, stack, ping, play, pause, next, clear, exit');
             } else if (raw === 'status') {
                 printCliLine('SYS: Ubuntu Server 24/7 | CRT: active | SFX: active');
             } else if (raw === 'server') {
@@ -587,13 +561,15 @@ if (cliInput) {
                 printCliLine('Languages: Python, C, C#, JavaScript, HTML, CSS, SQL');
             } else if (raw === 'ping') {
                 printCliLine(`Latency to gateway: ${Math.floor(18 + Math.random() * 8)}ms`);
-            } else if (raw === 'ado') {
-                printCliLine(`Current track: ${adoPlaylist[currentTrackIndex].title}`);
-                playTrack();
+            } else if (raw === 'play') {
+                if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
+                printCliLine(`Now playing: ${playlist[currentTrackIndex].title}`);
+            } else if (raw === 'pause') {
+                if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+                printCliLine('Playback paused.');
             } else if (raw === 'next') {
-                loadTrack(currentTrackIndex + 1);
-                playTrack();
-                printCliLine(`Switched to: ${adoPlaylist[currentTrackIndex].title}`);
+                playNextTrack();
+                printCliLine(`Switched to: ${playlist[currentTrackIndex].title}`);
             } else if (raw === 'clear') {
                 cliOutput.innerHTML = '';
             } else if (raw === 'exit') {
