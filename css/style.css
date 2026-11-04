@@ -398,7 +398,7 @@ main {
     color: #ffffff !important;
 }
 
-/* Oscilloscope Simulation */
+/* Oscilloscope Simulation & Ado Player */
 .hero-viewport {
     padding: 14px;
 }
@@ -436,6 +436,90 @@ main {
     display: block;
     aspect-ratio: 460 / 240;
     cursor: pointer;
+}
+
+.ado-player-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    margin-top: 8px;
+    background: #0d0f13;
+    border: 1px solid var(--border-base);
+    gap: 12px;
+}
+
+.player-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.player-btn {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-accent);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.player-btn:hover {
+    border-color: var(--accent-highlight);
+    background: var(--accent-slate);
+}
+
+.track-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.track-tag {
+    font-size: 8px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.track-name {
+    font-size: 11px;
+    color: var(--accent-highlight);
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 160px;
+}
+
+.player-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.vol-label {
+    font-size: 9px;
+    color: var(--text-muted);
+}
+
+.vol-slider {
+    width: 70px;
+    height: 4px;
+    accent-color: var(--accent-highlight);
+    background: var(--bg-surface-elevated);
+    cursor: pointer;
+}
+
+.vol-display {
+    font-size: 10px;
+    color: var(--text-secondary);
+    min-width: 28px;
+    text-align: right;
 }
 
 .viewport-footer {
@@ -1043,6 +1127,20 @@ main {
     .action-btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .ado-player-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .player-right {
+        justify-content: space-between;
+    }
+
+    .vol-slider {
+        flex-grow: 1;
     }
 
     .modal-backdrop {
