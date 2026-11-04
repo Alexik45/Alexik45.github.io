@@ -190,15 +190,15 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Background Stream Integration
+// Background Stream Integration with Verified Video IDs
 const playlist = [
-    { title: "Patient A - Ado", id: "5oG_QnL8Gg8" },
-    { title: "Raven Sky - Ado", id: "yW3eA3K3t30" },
+    { title: "Patient A - Ado", id: "JO66tA5Yngs" },
+    { title: "Raven Sky - Ado", id: "7DBSMzbPQzc" },
     { title: "FIRESTARTER - K/DA", id: "UOxkGD8qRB4" },
-    { title: "Demons Shot - Aiobahn +81", id: "j9mHhP7n7f8" },
-    { title: "MAGIC - Ado", id: "dFbhZ2k1Q2A" },
-    { title: "DND - Ado", id: "ZgZkE9n8L1s" },
-    { title: "Angelseek - Ado", id: "b2K4k8x1N7A" }
+    { title: "Demons Shot - Aiobahn +81", id: "OWDcn7hl16A" },
+    { title: "MAGIC - Ado", id: "l0WArCNh6G0" },
+    { title: "DND - Ado", id: "__qvPGatwus" },
+    { title: "Angelseek - Ado", id: "aGSmxr-dUq0" }
 ];
 
 let currentTrackIndex = 0;
@@ -214,8 +214,8 @@ const volValue = document.getElementById('volValue');
 
 window.onYouTubeIframeAPIReady = function() {
     ytPlayer = new YT.Player('ytPlayerContainer', {
-        height: '1',
-        width: '1',
+        height: '200',
+        width: '200',
         host: 'https://www.youtube-nocookie.com',
         videoId: playlist[currentTrackIndex].id,
         playerVars: {
@@ -224,8 +224,7 @@ window.onYouTubeIframeAPIReady = function() {
             disablekb: 1,
             fs: 0,
             rel: 0,
-            modestbranding: 1,
-            origin: window.location.origin
+            modestbranding: 1
         },
         events: {
             'onReady': onPlayerReady,
@@ -286,7 +285,7 @@ volumeSlider.addEventListener('input', (e) => {
     }
 });
 
-// Hardware Oscilloscope
+// Hardware Oscilloscope Engine
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
@@ -316,78 +315,117 @@ function renderScope() {
         fpsElement.textContent = `${Math.round(1000 / (delta || 16))} FPS`;
     }
 
-    scopeCtx.fillStyle = '#0d0e10';
+    // Phosphor decay persistence
+    scopeCtx.fillStyle = 'rgba(11, 12, 14, 0.28)';
     scopeCtx.fillRect(0, 0, scopeCanvas.width, scopeCanvas.height);
 
-    scopeCtx.lineWidth = 1;
-    scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.4)';
+    // Grid reticle
+    scopeCtx.lineWidth = 0.5;
+    scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.18)';
     scopeCtx.beginPath();
     scopeCtx.moveTo(0, scopeCanvas.height / 2);
     scopeCtx.lineTo(scopeCanvas.width, scopeCanvas.height / 2);
+    scopeCtx.moveTo(scopeCanvas.width / 2, 0);
+    scopeCtx.lineTo(scopeCanvas.width / 2, scopeCanvas.height);
+    for (let gx = 40; gx < scopeCanvas.width; gx += 40) {
+        scopeCtx.moveTo(gx, scopeCanvas.height / 2 - 3);
+        scopeCtx.lineTo(gx, scopeCanvas.height / 2 + 3);
+    }
     scopeCtx.stroke();
-
-    scopeCtx.lineWidth = 1.3;
-    scopeCtx.strokeStyle = '#c8cbd0';
-    scopeCtx.beginPath();
 
     const cy = scopeCanvas.height / 2;
     const mode = WAVE_MODES[currentWaveModeIndex];
+    const t = now * 0.001;
+
+    const wavePoints = [];
 
     if (mode === 'AUDIO SYNC') {
         if (isAudioPlaying) {
             const volFactor = currentVolume / 100;
-            const bassKick = Math.sin(scopePhase * 2) > 0.8 ? 1.4 : 1.0;
+            const beatKick = Math.pow(Math.max(0, Math.sin(t * 8.2)), 6) * 28;
+            const snareBurst = Math.pow(Math.max(0, Math.sin(t * 8.2 + 1.57)), 12) * 16;
+            const vocalSwell = 0.75 + 0.25 * Math.sin(t * 1.8);
+
             for (let x = 0; x < scopeCanvas.width; x++) {
                 const norm = (x / scopeCanvas.width) * Math.PI * 4;
-                const harmonic1 = Math.sin(norm * 1.5 + scopePhase * 3) * 22;
-                const harmonic2 = Math.sin(norm * 3.5 - scopePhase * 2) * 12;
-                const jitter = (Math.random() - 0.5) * 3;
-                const y = cy + (harmonic1 + harmonic2 + jitter) * volFactor * bassKick;
-                if (x === 0) scopeCtx.moveTo(x, y);
-                else scopeCtx.lineTo(x, y);
+                const low = Math.sin(norm * 1.5 + scopePhase * 2.8) * (18 + beatKick);
+                const mid = Math.sin(norm * 4.2 - scopePhase * 3.4) * (10 + snareBurst) * vocalSwell;
+                const high = Math.sin(norm * 9.5 + scopePhase * 6.2) * 5;
+                const transientNoise = (Math.random() - 0.5) * (3.5 + snareBurst * 0.2);
+                
+                const y = cy + (low + mid + high + transientNoise) * volFactor;
+                wavePoints.push({ x, y });
             }
         } else {
             for (let x = 0; x < scopeCanvas.width; x++) {
                 const norm = (x / scopeCanvas.width) * Math.PI * 4;
-                const y = cy + Math.sin(norm + scopePhase) * 4 * Math.sin(norm * 0.2 + scopePhase * 0.2);
-                if (x === 0) scopeCtx.moveTo(x, y);
-                else scopeCtx.lineTo(x, y);
+                const idleHum = Math.sin(norm * 6.0 + t * 4.0) * 1.5;
+                const noise = (Math.random() - 0.5) * 1.2;
+                wavePoints.push({ x, y: cy + idleHum + noise });
             }
         }
     } else if (mode === 'SINE') {
         for (let x = 0; x < scopeCanvas.width; x++) {
             const norm = (x / scopeCanvas.width) * Math.PI * 4;
             const y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5);
-            if (x === 0) scopeCtx.moveTo(x, y);
-            else scopeCtx.lineTo(x, y);
+            wavePoints.push({ x, y });
         }
     } else if (mode === 'SQUARE') {
         for (let x = 0; x < scopeCanvas.width; x++) {
             const norm = (x / scopeCanvas.width) * Math.PI * 4;
             const raw = Math.sin(norm * 1.5 + scopePhase);
             const y = cy + (raw > 0 ? 30 : -30) + (Math.random() - 0.5) * 2;
-            if (x === 0) scopeCtx.moveTo(x, y);
-            else scopeCtx.lineTo(x, y);
+            wavePoints.push({ x, y });
         }
     } else if (mode === 'NOISE') {
         for (let x = 0; x < scopeCanvas.width; x++) {
             const norm = (x / scopeCanvas.width) * Math.PI * 4;
             const y = cy + (Math.random() - 0.5) * 45 * Math.sin(norm * 0.5 + scopePhase);
-            if (x === 0) scopeCtx.moveTo(x, y);
-            else scopeCtx.lineTo(x, y);
+            wavePoints.push({ x, y });
         }
     } else if (mode === 'FM_CHIRP') {
         for (let x = 0; x < scopeCanvas.width; x++) {
             const norm = (x / scopeCanvas.width) * Math.PI * 4;
             const mod = Math.sin(norm * 0.2 + scopePhase) * 5;
             const y = cy + Math.sin(norm * mod + scopePhase * 2) * 30;
-            if (x === 0) scopeCtx.moveTo(x, y);
-            else scopeCtx.lineTo(x, y);
+            wavePoints.push({ x, y });
         }
     }
 
-    scopeCtx.stroke();
-    scopePhase += 0.035;
+    if (wavePoints.length > 0) {
+        // Phosphor bloom pass
+        scopeCtx.lineWidth = 4.5;
+        scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.45)';
+        scopeCtx.beginPath();
+        for (let i = 0; i < wavePoints.length; i++) {
+            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, wavePoints[i].y);
+            else scopeCtx.lineTo(wavePoints[i].x, wavePoints[i].y);
+        }
+        scopeCtx.stroke();
+
+        // Secondary harmonic trace
+        scopeCtx.lineWidth = 1.5;
+        scopeCtx.strokeStyle = 'rgba(163, 168, 180, 0.35)';
+        scopeCtx.beginPath();
+        for (let i = 0; i < wavePoints.length; i++) {
+            const yShift = (wavePoints[i].y - cy) * 0.88 + cy;
+            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, yShift);
+            else scopeCtx.lineTo(wavePoints[i].x, yShift);
+        }
+        scopeCtx.stroke();
+
+        // Core electron beam
+        scopeCtx.lineWidth = 1.2;
+        scopeCtx.strokeStyle = '#f2f3f5';
+        scopeCtx.beginPath();
+        for (let i = 0; i < wavePoints.length; i++) {
+            if (i === 0) scopeCtx.moveTo(wavePoints[i].x, wavePoints[i].y);
+            else scopeCtx.lineTo(wavePoints[i].x, wavePoints[i].y);
+        }
+        scopeCtx.stroke();
+    }
+
+    scopePhase += 0.038;
     requestAnimationFrame(renderScope);
 }
 renderScope();
