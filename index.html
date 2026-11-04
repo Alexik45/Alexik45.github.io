@@ -29,6 +29,15 @@
                 </nav>
 
                 <div class="header-actions">
+                    <div class="uptime-badge" title="Session Uptime">
+                        UP: <span id="sessionUptime">00:00</span>
+                    </div>
+                    <div class="ping-badge" id="pingBadge" title="Simulated Gateway Latency">
+                        PING: 21ms
+                    </div>
+                    <button id="cliToggle" class="tactile-btn" data-state="off" title="Toggle Terminal Console [~]">
+                        <span class="btn-led"></span>CLI
+                    </button>
                     <button id="soundToggle" class="tactile-btn" data-state="on" title="Synthetic feedback">
                         <span class="btn-led"></span>SFX
                     </button>
@@ -45,7 +54,7 @@
                 <div class="hero-layout">
                     <div class="hero-main">
                         <div class="status-pill">
-                            <span class="mono-tag">PERSONAL_SPACE</span>
+                            <span class="mono-tag" id="visitCount">VISITS: LOAD...</span>
                             <span class="pill-divider">/</span>
                             <span class="pill-text">JUST BUILDING & HOSTING STUFF</span>
                         </div>
@@ -60,6 +69,9 @@
                                 <span>Discord Profile</span>
                                 <span class="btn-arrow">↗</span>
                             </a>
+                            <button id="copyDiscordBtn" class="action-btn action-ghost" title="Copy Discord ID to clipboard">
+                                <span id="copyBtnText">Copy Discord ID</span>
+                            </button>
                             <a href="https://github.com/Alexik45" target="_blank" rel="noreferrer" class="action-btn action-ghost">
                                 <span>GitHub</span>
                                 <span class="btn-arrow">↗</span>
@@ -70,7 +82,9 @@
                     <div class="hero-viewport corner-frame">
                         <div class="viewport-bar">
                             <span class="bar-title">realtime_scope.wasm</span>
-                            <span class="bar-dim">audio/wave</span>
+                            <button id="waveModeToggle" class="scope-mode-btn" title="Click to cycle waveform generator">
+                                WAVE: <span id="waveModeLabel">SINE</span> ⟳
+                            </button>
                         </div>
                         <canvas id="scopeCanvas" width="460" height="240"></canvas>
                         <div class="viewport-footer">
@@ -95,25 +109,28 @@
                     <div class="lab-card corner-frame">
                         <div class="card-topbar">
                             <span class="file-name">sound_board.ts</span>
-                            <span class="pill-mini">AudioNode</span>
+                            <div class="card-topbar-actions">
+                                <button id="arpBtn" class="pill-mini-btn" title="Trigger quick chiptune arpeggio">PLAY ARP</button>
+                                <span class="pill-mini">Keys [1-6]</span>
+                            </div>
                         </div>
                         <div class="synth-board">
                             <div class="synth-pads">
-                                <button class="audio-pad" data-freq="130.81">C3</button>
-                                <button class="audio-pad" data-freq="164.81">E3</button>
-                                <button class="audio-pad" data-freq="196.00">G3</button>
-                                <button class="audio-pad" data-freq="246.94">B3</button>
-                                <button class="audio-pad" data-freq="293.66">D4</button>
-                                <button class="audio-pad" data-freq="392.00">G4</button>
+                                <button class="audio-pad" data-key="1" data-freq="130.81"><span>C3</span><small>1</small></button>
+                                <button class="audio-pad" data-key="2" data-freq="164.81"><span>E3</span><small>2</small></button>
+                                <button class="audio-pad" data-key="3" data-freq="196.00"><span>G3</span><small>3</small></button>
+                                <button class="audio-pad" data-key="4" data-freq="246.94"><span>B3</span><small>4</small></button>
+                                <button class="audio-pad" data-key="5" data-freq="293.66"><span>D4</span><small>5</small></button>
+                                <button class="audio-pad" data-key="6" data-freq="392.00"><span>G4</span><small>6</small></button>
                             </div>
                         </div>
-                        <p class="card-caption">Pure Web Audio synthesizer pads with procedural exponential decay.</p>
+                        <p class="card-caption">Pure Web Audio synthesizer pads with procedural exponential decay. Click or press keys 1 through 6.</p>
                     </div>
 
                     <div class="lab-card corner-frame">
                         <div class="card-topbar">
                             <span class="file-name">grid_physics.glsl</span>
-                            <span class="pill-mini">Canvas 2D</span>
+                            <button id="shockwaveBtn" class="pill-mini-btn" title="Detonate force impulse">PULSE IMPULSE</button>
                         </div>
                         <div class="lab-param-panel">
                             <div class="param-row">
@@ -129,7 +146,7 @@
                                 <input type="range" id="radiusSlider" min="80" max="300" step="10" value="160" class="slider-input">
                             </div>
                         </div>
-                        <p class="card-caption">Directly tweaks the spring mechanics on the interactive background mesh.</p>
+                        <p class="card-caption">Directly tweaks background spring tension. You can also click or tap anywhere on the background to create shockwaves.</p>
                     </div>
                 </div>
             </section>
@@ -300,6 +317,21 @@
                         <ul id="modalTechList" class="modal-list"></ul>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Interactive Terminal Drawer -->
+        <div id="cliDrawer" class="cli-drawer corner-frame">
+            <div class="cli-header">
+                <span class="cli-title">alex1k45 // interactive-sh</span>
+                <span class="cli-shortcut">Type 'help' | [~] to close</span>
+            </div>
+            <div id="cliOutput" class="cli-output">
+                <div>Type <span class="cli-highlight">help</span> to view available commands.</div>
+            </div>
+            <div class="cli-input-line">
+                <span class="cli-prompt">alex@box:~$</span>
+                <input type="text" id="cliInput" class="cli-input" autofocus autocomplete="off" spellcheck="false">
             </div>
         </div>
 
