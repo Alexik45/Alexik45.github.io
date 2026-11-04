@@ -155,11 +155,14 @@ function renderGrid() {
 }
 renderGrid();
 
-// Audio Synth & SFX Engine
+// Audio Engine, Synthesizer & Hardware Analyser
 let sfxActive = true;
 let crtActive = true;
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audio = null;
+let bgSourceNode = null;
+let bgAnalyserNode = null;
+let audioDataArray = null;
 
 function getAudioContext() {
     if (!audio) audio = new AudioCtx();
@@ -190,13 +193,125 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Multimode Oscilloscope Viewport
+// Ado Chronological Discography Queue (Newest to Oldest)
+const adoPlaylist = [
+    { title: "Ado - Mirror", file: "audio/mirror.mp3" },
+    { title: "Ado - RuLe", file: "audio/rule.mp3" },
+    { title: "Ado - Chocolat Cadabra", file: "audio/chocolat_cadabra.mp3" },
+    { title: "Ado - Value", file: "audio/value.mp3" },
+    { title: "Ado - DIGNITY", file: "audio/dignity.mp3" },
+    { title: "Ado - Kura Kura", file: "audio/kura_kura.mp3" },
+    { title: "Ado - Show", file: "audio/show.mp3" },
+    { title: "Ado - I'm a Controversy", file: "audio/im_a_controversy.mp3" },
+    { title: "Ado - Rebellion", file: "audio/rebellion.mp3" },
+    { title: "Ado - Backlight (逆光)", file: "audio/backlight.mp3" },
+    { title: "Ado - New Genesis (新時代)", file: "audio/new_genesis.mp3" },
+    { title: "Ado - Ashura-chan", file: "audio/ashura_chan.mp3" },
+    { title: "Ado - Yoru no Pierrot", file: "audio/yoru_no_pierrot.mp3" },
+    { title: "Ado - Odo (踊)", file: "audio/odo.mp3" },
+    { title: "Ado - Gira Gira (ギラギラ)", file: "audio/gira_gira.mp3" },
+    { title: "Ado - Readymade", file: "audio/readymade.mp3" },
+    { title: "Ado - Usseewa (うっせぇわ)", file: "audio/usseewa.mp3" }
+];
+
+let currentTrackIndex = 0;
+const bgAudio = document.getElementById('bgAudio');
+const musicPlayBtn = document.getElementById('musicPlayBtn');
+const musicNextBtn = document.getElementById('musicNextBtn');
+const currentTrackTitle = document.getElementById('currentTrackTitle');
+const volumeSlider = document.getElementById('volumeSlider');
+const volValue = document.getElementById('volValue');
+
+function setupAudioPipeline() {
+    if (bgAnalyserNode) return;
+    try {
+        const ctx = getAudioContext();
+        bgAnalyserNode = ctx.createAnalyser();
+        bgAnalyserNode.fftSize = 512;
+        audioDataArray = new Uint8Array(bgAnalyserNode.frequencyBinCount);
+
+        bgSourceNode = ctx.createMediaElementSource(bgAudio);
+        bgSourceNode.connect(bgAnalyserNode);
+        bgAnalyserNode.connect(ctx.destination);
+    } catch (_) {}
+}
+
+function loadTrack(index) {
+    currentTrackIndex = (index + adoPlaylist.length) % adoPlaylist.length;
+    const track = adoPlaylist[currentTrackIndex];
+    bgAudio.src = track.file;
+    currentTrackTitle.textContent = track.title;
+}
+
+function playTrack() {
+    setupAudioPipeline();
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    bgAudio.play().then(() => {
+        musicPlayBtn.textContent = '❚❚ PAUSE';
+    }).catch(() => {
+        musicPlayBtn.textContent = '▶ PLAY';
+    });
+}
+
+function pauseTrack() {
+    bgAudio.pause();
+    musicPlayBtn.textContent = '▶ PLAY';
+}
+
+bgAudio.volume = 0.15;
+loadTrack(0);
+
+bgAudio.addEventListener('ended', () => {
+    loadTrack(currentTrackIndex + 1);
+    playTrack();
+});
+
+musicPlayBtn.addEventListener('click', () => {
+    if (bgAudio.paused) {
+        playTrack();
+    } else {
+        pauseTrack();
+    }
+});
+
+musicNextBtn.addEventListener('click', () => {
+    loadTrack(currentTrackIndex + 1);
+    playTrack();
+    triggerTone(660, 'sine', 0.04, 0.03);
+});
+
+volumeSlider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    bgAudio.volume = val;
+    volValue.textContent = `${Math.round(val * 100)}%`;
+});
+
+// Autoplay trigger on first genuine page interaction
+let interactionUnlocked = false;
+function unlockAudioPlayback() {
+    if (interactionUnlocked) return;
+    interactionUnlocked = true;
+    setupAudioPipeline();
+    if (bgAudio.paused) {
+        playTrack();
+    }
+    window.removeEventListener('pointerdown', unlockAudioPlayback);
+    window.removeEventListener('keydown', unlockAudioPlayback);
+}
+
+window.addEventListener('pointerdown', unlockAudioPlayback);
+window.addEventListener('keydown', unlockAudioPlayback);
+
+// Multimode Hardware Oscilloscope (Default: AUDIO SYNC)
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
 const waveModeLabel = document.getElementById('waveModeLabel');
+const scopeStatus = document.getElementById('scopeStatus');
 
-const WAVE_MODES = ['SINE', 'SQUARE', 'NOISE', 'FM_CHIRP'];
+const WAVE_MODES = ['AUDIO SYNC', 'SINE', 'SQUARE', 'NOISE', 'FM_CHIRP'];
 let currentWaveModeIndex = 0;
 let scopePhase = 0;
 let lastFrameTime = performance.now();
@@ -205,11 +320,11 @@ const fpsElement = document.getElementById('fpsCounter');
 function cycleWaveMode() {
     currentWaveModeIndex = (currentWaveModeIndex + 1) % WAVE_MODES.length;
     waveModeLabel.textContent = WAVE_MODES[currentWaveModeIndex];
+    scopeStatus.textContent = currentWaveModeIndex === 0 ? 'AUDIO: SYNCHRONIZED' : 'INTERNAL GENERATOR';
     triggerTone(440 + currentWaveModeIndex * 110, 'triangle', 0.04, 0.04);
 }
 
 if (waveModeBtn) waveModeBtn.addEventListener('click', cycleWaveMode);
-if (scopeCanvas) scopeCanvas.addEventListener('click', cycleWaveMode);
 
 function renderScope() {
     const now = performance.now();
@@ -229,34 +344,70 @@ function renderScope() {
     scopeCtx.lineTo(scopeCanvas.width, scopeCanvas.height / 2);
     scopeCtx.stroke();
 
-    scopeCtx.lineWidth = 1.2;
+    scopeCtx.lineWidth = 1.3;
     scopeCtx.strokeStyle = '#c8cbd0';
     scopeCtx.beginPath();
 
     const cy = scopeCanvas.height / 2;
     const mode = WAVE_MODES[currentWaveModeIndex];
 
-    for (let x = 0; x < scopeCanvas.width; x++) {
-        const norm = (x / scopeCanvas.width) * Math.PI * 4;
-        let y = cy;
+    if (mode === 'AUDIO SYNC') {
+        if (bgAnalyserNode && audioDataArray && !bgAudio.paused) {
+            bgAnalyserNode.getByteTimeDomainData(audioDataArray);
+            const sliceWidth = scopeCanvas.width / audioDataArray.length;
+            let x = 0;
 
-        if (mode === 'SINE') {
-            y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5);
-        } else if (mode === 'SQUARE') {
-            const raw = Math.sin(norm * 1.5 + scopePhase);
-            y = cy + (raw > 0 ? 30 : -30) + (Math.random() - 0.5) * 2;
-        } else if (mode === 'NOISE') {
-            y = cy + (Math.random() - 0.5) * 45 * Math.sin(norm * 0.5 + scopePhase);
-        } else if (mode === 'FM_CHIRP') {
-            const mod = Math.sin(norm * 0.2 + scopePhase) * 5;
-            y = cy + Math.sin(norm * mod + scopePhase * 2) * 30;
+            for (let i = 0; i < audioDataArray.length; i++) {
+                const v = audioDataArray[i] / 128.0;
+                const y = (v * (scopeCanvas.height / 2));
+
+                if (i === 0) scopeCtx.moveTo(x, y);
+                else scopeCtx.lineTo(x, y);
+
+                x += sliceWidth;
+            }
+        } else {
+            // Idle acoustic sweep when audio is paused
+            for (let x = 0; x < scopeCanvas.width; x++) {
+                const norm = (x / scopeCanvas.width) * Math.PI * 4;
+                const y = cy + Math.sin(norm + scopePhase) * 6 * Math.sin(norm * 0.2 + scopePhase * 0.2) + (Math.random() - 0.5);
+                if (x === 0) scopeCtx.moveTo(x, y);
+                else scopeCtx.lineTo(x, y);
+            }
         }
-
-        if (x === 0) scopeCtx.moveTo(x, y);
-        else scopeCtx.lineTo(x, y);
+    } else if (mode === 'SINE') {
+        for (let x = 0; x < scopeCanvas.width; x++) {
+            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+            const y = cy + Math.sin(norm + scopePhase) * 32 * Math.sin(norm * 0.4 + scopePhase * 0.5);
+            if (x === 0) scopeCtx.moveTo(x, y);
+            else scopeCtx.lineTo(x, y);
+        }
+    } else if (mode === 'SQUARE') {
+        for (let x = 0; x < scopeCanvas.width; x++) {
+            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+            const raw = Math.sin(norm * 1.5 + scopePhase);
+            const y = cy + (raw > 0 ? 30 : -30) + (Math.random() - 0.5) * 2;
+            if (x === 0) scopeCtx.moveTo(x, y);
+            else scopeCtx.lineTo(x, y);
+        }
+    } else if (mode === 'NOISE') {
+        for (let x = 0; x < scopeCanvas.width; x++) {
+            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+            const y = cy + (Math.random() - 0.5) * 45 * Math.sin(norm * 0.5 + scopePhase);
+            if (x === 0) scopeCtx.moveTo(x, y);
+            else scopeCtx.lineTo(x, y);
+        }
+    } else if (mode === 'FM_CHIRP') {
+        for (let x = 0; x < scopeCanvas.width; x++) {
+            const norm = (x / scopeCanvas.width) * Math.PI * 4;
+            const mod = Math.sin(norm * 0.2 + scopePhase) * 5;
+            const y = cy + Math.sin(norm * mod + scopePhase * 2) * 30;
+            if (x === 0) scopeCtx.moveTo(x, y);
+            else scopeCtx.lineTo(x, y);
+        }
     }
-    scopeCtx.stroke();
 
+    scopeCtx.stroke();
     scopePhase += 0.035;
     requestAnimationFrame(renderScope);
 }
@@ -321,6 +472,21 @@ const projectData = {
             "Garbage collection tuning & automated memory reclamation",
             "Discord webhook notifications for server events",
             "Automated tar.gz rotating backups"
+        ]
+    },
+    portfolio: {
+        id: "05_CLIENT",
+        tags: "HTML5 / CSS3 / Vanilla JS / Web Audio API / GitHub Pages",
+        title: "This Personal Workspace Hub",
+        whatIs: "A completely custom, dependency-free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
+        whatDoes: "Renders interactive point-mass physics simulations, processes background audio streams into dynamic oscilloscope waveforms, provides an interactive CLI drawer, and displays infrastructure logs.",
+        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is analyzed using Web Audio API's AnalyserNode, capturing real-time byte time domain amplitudes and mapping them to HTML5 Canvas coordinates.",
+        techList: [
+            "Semantic HTML5 & modular CSS custom property tokens",
+            "Vanilla JavaScript ESNext without bundlers or dependencies",
+            "HTML5 Canvas 2D spring grid physics engine",
+            "Web Audio API real-time FFT frequency analyser & procedural synth",
+            "Automated continuous deployment via GitHub Pages"
         ]
     }
 };
@@ -412,7 +578,7 @@ if (cliInput) {
             printCliLine(`alex@box:~$ ${raw}`);
 
             if (raw === 'help') {
-                printCliLine('Commands: status, server, stack, ping, ado, clear, exit');
+                printCliLine('Commands: status, server, stack, ping, ado, next, clear, exit');
             } else if (raw === 'status') {
                 printCliLine('SYS: Ubuntu Server 24/7 | CRT: active | SFX: active');
             } else if (raw === 'server') {
@@ -422,8 +588,12 @@ if (cliInput) {
             } else if (raw === 'ping') {
                 printCliLine(`Latency to gateway: ${Math.floor(18 + Math.random() * 8)}ms`);
             } else if (raw === 'ado') {
-                printCliLine('Now playing in the background: Ado - Usseewa / Show / Gira Gira');
-                triggerTone(523.25, 'triangle', 0.12, 0.06);
+                printCliLine(`Current track: ${adoPlaylist[currentTrackIndex].title}`);
+                playTrack();
+            } else if (raw === 'next') {
+                loadTrack(currentTrackIndex + 1);
+                playTrack();
+                printCliLine(`Switched to: ${adoPlaylist[currentTrackIndex].title}`);
             } else if (raw === 'clear') {
                 cliOutput.innerHTML = '';
             } else if (raw === 'exit') {
