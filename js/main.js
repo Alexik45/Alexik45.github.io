@@ -216,6 +216,7 @@ window.onYouTubeIframeAPIReady = function() {
     ytPlayer = new YT.Player('ytPlayerContainer', {
         height: '1',
         width: '1',
+        host: 'https://www.youtube-nocookie.com',
         videoId: playlist[currentTrackIndex].id,
         playerVars: {
             autoplay: 0,
@@ -223,11 +224,13 @@ window.onYouTubeIframeAPIReady = function() {
             disablekb: 1,
             fs: 0,
             rel: 0,
-            modestbranding: 1
+            modestbranding: 1,
+            origin: window.location.origin
         },
         events: {
             'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
         }
     });
 };
@@ -247,6 +250,10 @@ function onPlayerStateChange(event) {
     } else if (event.data === YT.PlayerState.ENDED) {
         playNextTrack();
     }
+}
+
+function onPlayerError() {
+    playNextTrack();
 }
 
 function playNextTrack() {
