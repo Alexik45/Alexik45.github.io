@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/style.css?v=5">
+        <link rel="stylesheet" href="css/style.css?v=6">
     </head>
     <body>
         <canvas id="warpGridCanvas"></canvas>
@@ -63,7 +63,7 @@
                             Writing code, hosting bots, and <span class="accent-italic">breaking</span> things for fun.
                         </h1>
                         <p class="hero-desc">
-                            Messing with C, Python, web stuff, and self-hosted Linux servers. Here are a few experiments, tools, and things I run.
+                            Messing with C, Python, web stuff, and self hosted Linux servers. Here are a few experiments, tools, and things I run.
                         </p>
                         <div class="hero-actions">
                             <a href="https://discordapp.com/users/768033946666663946" target="_blank" rel="noreferrer" class="action-btn action-primary">
@@ -99,7 +99,7 @@
                                 <button id="musicNextBtn" class="player-btn" title="Next track">⏭</button>
                                 <div class="track-info">
                                     <span class="track-tag">STREAM QUEUE</span>
-                                    <span id="currentTrackTitle" class="track-name">Patient A - Ado</span>
+                                    <span id="currentTrackTitle" class="track-name">Patient A / Ado</span>
                                 </div>
                             </div>
                             <div class="player-right">
@@ -132,7 +132,7 @@
                             <span class="file-name">sound_board.ts</span>
                             <div class="card-topbar-actions">
                                 <button id="arpBtn" class="pill-mini-btn" title="Trigger quick chiptune arpeggio">PLAY ARP</button>
-                                <span class="pill-mini">Keys [1-6]</span>
+                                <span class="pill-mini">Keys [1, 6]</span>
                             </div>
                         </div>
                         <div class="synth-board">
@@ -181,8 +181,15 @@
                     <h2 class="section-title">Projects & Infrastructure</h2>
                 </div>
 
+                <div class="project-filter-bar">
+                    <button class="filter-btn active" data-filter="all">ALL</button>
+                    <button class="filter-btn" data-filter="websites">WEBSITES</button>
+                    <button class="filter-btn" data-filter="systems">SYSTEMS</button>
+                    <button class="filter-btn" data-filter="bots">BOTS</button>
+                </div>
+
                 <div class="project-matrix">
-                    <article class="project-card corner-frame interactive-card" data-project="localtools">
+                    <article class="project-card corner-frame interactive-card" data-project="localtools" data-category="websites">
                         <div class="project-header">
                             <span class="project-mono">01_SUITE</span>
                             <div class="project-tags">
@@ -192,9 +199,9 @@
                                 <span>100% RAM</span>
                             </div>
                         </div>
-                        <h3 class="project-heading">tools://local — Client Suite</h3>
+                        <h3 class="project-heading">tools://local Client Suite</h3>
                         <p class="project-detail">
-                            Zero-telemetry client-side media processor and studio suite. Image Canva studio, video frame workbench, audio DSP normalizer, PDF compiler, and in-RAM ZIP hex inspector.
+                            Zero telemetry client side media processor and studio suite. Image Canva studio, video frame workbench, audio DSP normalizer, PDF compiler, and in RAM ZIP hex inspector.
                         </p>
                         <div class="project-footer">
                             <span class="card-action-hint">Click to inspect setup ↗</span>
@@ -202,7 +209,7 @@
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame interactive-card" data-project="homeserver">
+                    <article class="project-card corner-frame interactive-card" data-project="homeserver" data-category="systems">
                         <div class="project-header">
                             <span class="project-mono">02_INFRA</span>
                             <div class="project-tags">
@@ -211,16 +218,16 @@
                                 <span>Tailscale</span>
                             </div>
                         </div>
-                        <h3 class="project-heading">Self-Hosted Home Server Rig</h3>
+                        <h3 class="project-heading">Self Hosted Home Server Rig</h3>
                         <p class="project-detail">
-                            Repurposed machine running 24/7 Ubuntu Server with isolated Docker containers, zero-trust mesh tunnels, and centralized app management.
+                            Repurposed machine running 24/7 Ubuntu Server with isolated Docker containers, zero trust mesh tunnels, and centralized app management.
                         </p>
                         <div class="project-footer">
                             <span class="card-action-hint">Click to inspect setup ↗</span>
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame interactive-card" data-project="discordbot">
+                    <article class="project-card corner-frame interactive-card" data-project="discordbot" data-category="bots">
                         <div class="project-header">
                             <span class="project-mono">03_BOT</span>
                             <div class="project-tags">
@@ -231,14 +238,14 @@
                         </div>
                         <h3 class="project-heading">Discord Bot & Automation Daemon</h3>
                         <p class="project-detail">
-                            Custom multi-purpose server bot handling community moderation, interactive embeds, dynamic roles, and 24/7 automated background tasks.
+                            Custom multi purpose server bot handling community moderation, interactive embeds, dynamic roles, and 24/7 automated background tasks.
                         </p>
                         <div class="project-footer">
                             <span class="card-action-hint">Click to inspect setup ↗</span>
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame interactive-card" data-project="cloudstorage">
+                    <article class="project-card corner-frame interactive-card" data-project="cloudstorage" data-category="systems">
                         <div class="project-header">
                             <span class="project-mono">04_STORAGE</span>
                             <div class="project-tags">
@@ -249,14 +256,14 @@
                         </div>
                         <h3 class="project-heading">Private Cloud & Storage Portal</h3>
                         <p class="project-detail">
-                            Self-hosted cloud storage stack combining block-level device syncing with a unified web aggregator for direct access anywhere.
+                            Self hosted cloud storage stack combining block level device syncing with a unified web aggregator for direct access anywhere.
                         </p>
                         <div class="project-footer">
                             <span class="card-action-hint">Click to inspect setup ↗</span>
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame interactive-card" data-project="gameservers">
+                    <article class="project-card corner-frame interactive-card" data-project="gameservers" data-category="systems">
                         <div class="project-header">
                             <span class="project-mono">05_OPS</span>
                             <div class="project-tags">
@@ -274,7 +281,7 @@
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame interactive-card" data-project="portfolio">
+                    <article class="project-card corner-frame interactive-card" data-project="portfolio" data-category="websites">
                         <div class="project-header">
                             <span class="project-mono">06_CLIENT</span>
                             <div class="project-tags">
@@ -285,16 +292,16 @@
                         </div>
                         <h3 class="project-heading">This Personal Workspace Hub</h3>
                         <p class="project-detail">
-                            Dependency-free reactive web workspace running Hooke's spring mesh physics, real-time oscilloscope FFT audio mapping, and terminal subsystems.
+                            Dependency free reactive web workspace running Hooke spring mesh physics, real time oscilloscope FFT audio mapping, and terminal subsystems.
                         </p>
                         <div class="project-footer">
                             <span class="card-action-hint">Click to inspect setup ↗</span>
                         </div>
                     </article>
 
-                    <article class="project-card corner-frame wip-card">
+                    <article class="project-card corner-frame wip-card" data-category="all">
                         <div class="project-header">
-                            <span class="project-mono">07_PIPELINE</span>
+                            <span class="project-mono">PIPELINE</span>
                             <div class="project-tags">
                                 <span>In Dev</span>
                                 <span>WIP</span>
@@ -380,7 +387,7 @@
 
         <div id="cliDrawer" class="cli-drawer corner-frame">
             <div class="cli-header">
-                <span class="cli-title">alex1k45 // interactive-sh</span>
+                <span class="cli-title">alex1k45 // interactive sh</span>
                 <span class="cli-shortcut">Type 'help' | [~] to close</span>
             </div>
             <div id="cliOutput" class="cli-output">
@@ -396,7 +403,7 @@
             <div class="footer-inner">
                 <div class="footer-left">
                     <span class="brand-text">alex1k45</span>
-                    <span class="footer-dim">— personal playground</span>
+                    <span class="footer-dim">/ personal playground</span>
                 </div>
                 <div class="footer-right">
                     <a href="mailto:contact.alexandr@proton.me" class="footer-anchor">Email</a>
@@ -408,6 +415,6 @@
         </footer>
 
         <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="js/main.js?v=5"></script>
+        <script src="js/main.js?v=6"></script>
     </body>
 </html>
