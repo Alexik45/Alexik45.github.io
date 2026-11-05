@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/style.css?v=6">
+        <link rel="stylesheet" href="css/style.css?v=7">
     </head>
     <body>
         <canvas id="warpGridCanvas"></canvas>
@@ -77,10 +77,10 @@
                                 <span>GitHub</span>
                                 <span class="btn-arrow">↗</span>
                             </a>
-                            <a href="mailto:contact.alexandr@proton.me" class="action-btn action-ghost" title="Direct Email">
+                            <button id="emailTriggerBtn" class="action-btn action-ghost" title="Send or copy email">
                                 <span>Email</span>
-                                <span class="btn-arrow">↗</span>
-                            </a>
+                                <span class="btn-arrow">✉</span>
+                            </button>
                         </div>
                     </div>
 
@@ -385,6 +385,62 @@
             </div>
         </div>
 
+        <!-- Dispatch Email Modal -->
+        <div id="emailModal" class="modal-backdrop">
+            <div class="modal-window corner-frame email-modal-window">
+                <div class="modal-header">
+                    <div class="modal-meta">
+                        <span class="modal-badge">DISPATCH_GATEWAY</span>
+                        <span class="modal-tags">contact.alexandr@proton.me</span>
+                    </div>
+                    <button id="emailModalCloseBtn" class="modal-close" title="Close" aria-label="Close modal">[ ESC / ✕ ]</button>
+                </div>
+                <div class="modal-content">
+                    <h2 class="modal-title">Contact & Dispatch Email</h2>
+
+                    <div class="email-direct-box">
+                        <div class="email-box-info">
+                            <span class="email-box-label">DESTINATION ADDRESS</span>
+                            <span class="email-box-addr">contact.alexandr@proton.me</span>
+                        </div>
+                        <button id="modalCopyAddrBtn" class="pill-mini-btn">Copy Address</button>
+                    </div>
+
+                    <div class="modal-block">
+                        <h4 class="modal-block-label">// Compose Message in Browser</h4>
+                        <div class="email-form">
+                            <div class="form-row">
+                                <label class="form-field-label" for="emailSenderInput">YOUR EMAIL / NAME (OPTIONAL)</label>
+                                <input type="text" id="emailSenderInput" class="form-text-input" placeholder="e.g. John (john@example.com)">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-field-label" for="emailSubjectInput">SUBJECT</label>
+                                <input type="text" id="emailSubjectInput" class="form-text-input" placeholder="Topic or project inquiry">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-field-label" for="emailBodyInput">MESSAGE</label>
+                                <textarea id="emailBodyInput" class="form-textarea" rows="5" placeholder="Write your message here..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="email-actions-grid">
+                        <button id="emailSendClientBtn" class="modal-action-btn primary-action">
+                            <span>Open in Mail App</span>
+                            <span class="btn-arrow">↗</span>
+                        </button>
+                        <button id="emailOpenGmailBtn" class="modal-action-btn ghost-action">
+                            <span>Open in Gmail Web</span>
+                            <span class="btn-arrow">↗</span>
+                        </button>
+                        <button id="emailCopyDraftBtn" class="modal-action-btn ghost-action">
+                            <span id="copyDraftLabel">Copy Draft Text</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="cliDrawer" class="cli-drawer corner-frame">
             <div class="cli-header">
                 <span class="cli-title">alex1k45 // interactive sh</span>
@@ -406,7 +462,7 @@
                     <span class="footer-dim">/ personal playground</span>
                 </div>
                 <div class="footer-right">
-                    <a href="mailto:contact.alexandr@proton.me" class="footer-anchor">Email</a>
+                    <button id="footerEmailBtn" class="footer-anchor-btn">Email</button>
                     <a href="https://ko-fi.com/alexik45#setGoalModal" target="_blank" rel="noreferrer" class="footer-anchor" title="Support on Ko-fi">Ko-fi</a>
                     <a href="https://discordapp.com/users/768033946666663946" target="_blank" rel="noreferrer" class="footer-anchor">Discord</a>
                     <a href="https://github.com/Alexik45" target="_blank" rel="noreferrer" class="footer-anchor">GitHub</a>
@@ -415,6 +471,6 @@
         </footer>
 
         <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="js/main.js?v=6"></script>
+        <script src="js/main.js?v=7"></script>
     </body>
 </html>
