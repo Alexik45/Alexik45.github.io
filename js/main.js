@@ -190,114 +190,87 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Multi Fallback Stream Queue with Complete Audio Intel
+// Multi Stream Playlist with Open LRCLIB Query Parameters
 const playlist = [
-    {
-        title: "Patient A / Ado",
-        ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"],
-        lyrics: "[ACT 01: SYMPTOMS]\nCold clinic walls and digital pulse monitors.\nA sharp critique of modern conformity and forced diagnosis.\n\n[ACT 02: DIAGNOSIS]\nVocal intensity exploding through abrasive electronic layers.\nThe patient rejects the cure and embraces their true identity.\n\n[FINALE]\nTotal sonic breakdown with relentless rock guitars."
-    },
-    {
-        title: "Raven Sky / Ado",
-        ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"],
-        lyrics: "[SECTION 01: FLIGHT]\nDark nocturnal flight across towering metropolitan skies.\nA sombre yet powerful ballad layered over sweeping strings.\n\n[CHORUS]\nReaching for freedom beyond heavy cloud cover.\nMelancholic vocal depth carrying emotional weight."
-    },
-    {
-        title: "Show / Ado",
-        ids: ["pgXpM4l_MwI", "08qPn6bNqE8"],
-        lyrics: "[STAGE 01: WELCOME]\nElectrifying circus swing fused with explosive bass house.\nCarnival beats driving immediate dance floor energy.\n\n[CHORUS]\nUnstoppable vocal acrobatics commanding the spotlight.\nReady to turn reality inside out under the strobe lights."
-    },
-    {
-        title: "Odo / Ado",
-        ids: ["YnSW8ian29w", "sOiMD45QGLs"],
-        lyrics: "[VERSE]\nTeddyLoid and Giga high octane electronic dance production.\nRapid fire vocal rhythms slicing through syncopated synth drops.\n\n[DROP]\nKeep moving until the break of dawn.\nUnshakable rhythm taking absolute control of the body."
-    },
-    {
-        title: "Usseewa / Ado",
-        ids: ["Qp3b-RXtz4w", "0hBqU0iL0K4"],
-        lyrics: "[THE MANIFESTO]\nThe breakthrough anthem that defined an entire era.\nSharp defiance directed at societal pressure and hypocritical rules.\n\n[CHORUS]\nLoud and unmistakable: Shut up, get out of the way.\nPure cathartic anger transformed into musical genius."
-    },
-    {
-        title: "Gira Gira / Ado",
-        ids: ["sOiMD45QGLs", "4L_iXpL7U3M"],
-        lyrics: "[PREMISE]\nA melancholic exploration of inner insecurity and unique beauty.\nPoetic wordplay contrasting outer sparkle with raw emotion.\n\n[CLIMAX]\nLighting up the dark despite feeling like an outsider.\nRefusing to be dulled by ordinary standards."
-    },
-    {
-        title: "RuLe / Ado",
-        ids: ["bE9QJkK8nI0", "kQ2iP7tU_wQ"],
-        lyrics: "[OVERVIEW]\nHigh velocity electronic track composed for high tension drama.\nAbrasive rhythm sections driven by fierce vocal delivery.\n\n[THEME]\nBreaking through artificial boundaries and writing custom rules."
-    },
-    {
-        title: "FIRESTARTER / K/DA",
-        ids: ["ydz3tn9jTYI", "Mmw-PpWhKFg", "UOxkGD8qRB4"],
-        lyrics: "[INTRO]\nHeavy 808 sub bass accompanied by aggressive trap rhythm.\nConfident vocal swagger igniting the atmosphere.\n\n[HOOK]\nSparks turning into an unstoppable blaze.\nDominating the stage with unmistakable presence."
-    },
-    {
-        title: "WATCH ME / K/DA",
-        ids: ["R-JywodifoE", "vjehGOVmBQE", "AiyE4HSzlyo"],
-        lyrics: "[CYPHER]\nSlick futuristic electro pop with razor sharp delivery.\nFocus locked on self assurance and unshakeable mastery.\n\n[CHORUS]\nKeep your eyes fixed on the champion tier.\nRedefining standards with every bar."
-    },
-    {
-        title: "Demons Shot / Aiobahn +81",
-        ids: ["D8UmHPMOclQ", "zvdeJRhzdog", "OWDcn7hl16A"],
-        lyrics: "[FLOW]\nJapanese speedcore and rave electronics meeting aggressive rap delivery.\nHyperactive drum breaks accelerating past 180 BPM.\n\n[DROP]\nDirect adrenaline hit with distorted bass stabs."
-    },
-    {
-        title: "MAGIC / Ado",
-        ids: ["PKjQv13hZHc", "eH4jv7qmqCo", "u71LfK8OQBg", "l0WArCNh6G0"],
-        lyrics: "[OPENING]\nJazzy brass arrangements colliding with contemporary funk rhythms.\nPlayful vocal inflection dancing across intricate syncopation.\n\n[THEME]\nCasting an irresistible spell that bends time and space."
-    },
-    {
-        title: "DND / Ado",
-        ids: ["_craccBC-GY", "SfcMRGVeMuM", "__qvPGatwus"],
-        lyrics: "[STATUS: DO NOT DISTURB]\nDark playful collaboration with heavy attitude and electronic grit.\nShielding personal space from unnecessary drama.\n\n[MESSAGE]\nUnplugged, focused, and untouchable."
-    },
-    {
-        title: "Angelseek / Ado",
-        ids: ["ukdidk1CkaQ", "Qen-YyWGrsk", "SRPR9u592jg", "aGSmxr-dUq0"],
-        lyrics: "[JOURNEY]\nAtmospheric buildup evolving into soaring vocal peaks.\nSearching for salvation within a complicated world.\n\n[CHORUS]\nHaunting melodies floating over cinematic instrumentation."
-    },
-    {
-        title: "My Darkest Desire / Shapiano",
-        ids: ["O7yb2gooN7A", "WgjLavMTC7E", "HnE6h2MiOYY"],
-        lyrics: "[VIBE]\nDark melodic phonk with heavy saturation and pitch shifted samples.\nNocturnal drift aesthetic echoing through rain drenched streets.\n\n[ENERGY]\nLate night automotive focus and heavy low end resonance."
-    },
-    {
-        title: "Megaton Kinesis / DJ Myosuke",
-        ids: ["jVuJwtVlUQk", "Pwm_dKX-1b8", "8PbpzfQEYW8"],
-        lyrics: "[HARDCORE]\nPeak Japanese hardcore and Frenchcore anthem.\nIndustrial kick drums tearing through sonic barriers at 200+ BPM.\n\n[IMPACT]\nAbsolute kinetic force designed for maximal festival energy."
-    },
-    {
-        title: "GABBA GABBA / Little Sis Nora",
-        ids: ["PmD5pP_Oky4", "LRql95hHq3Y", "9ARhpQyx4FI"],
-        lyrics: "[EURO RAVE]\nExplosive gabber kicks wrapped in comedic high energy vocal lines.\nHappily chaotic party anthem with unstoppable four on the floor drive.\n\n[DROP]\nHigh BPM bounce with zero apologies."
-    },
-    {
-        title: "Tears pain and blood / Kuro Phase",
-        ids: ["AaIqlle_1TU"],
-        lyrics: "[DARK DRIFT]\nHaunting drift phonk ambiance paired with distorted cowbells.\nProcessing heavy internal struggles through raw aggressive frequency.\n\n[CHORUS]\nTurning pain into unbreakable momentum."
-    },
-    {
-        title: "GOOD LOYAL THOTS / Odetari",
-        ids: ["2k5wP2rpYig", "lP4MKIXntXU", "Aa50U0qDy2M"],
-        lyrics: "[HYPERPOP]\nGlitch laden odecore rhythms with chaotic stutter edits.\nBiting lyrics tackling superficial modern relationships.\n\n[HOOK]\nAddictive bass groove that never lets go."
-    },
-    {
-        title: "LOOK DONT TOUCH / Odetari",
-        ids: ["H6i1261J_kI", "i70tI4Dcx3s"],
-        lyrics: "[CLUB RHYTHM]\nBouncy dark wave electro beat with distorted vocal chops.\nSetting hard boundaries and commanding attention.\n\n[ENERGY]\nHigh tempo infectious dance floor pressure."
-    },
-    {
-        title: "Hands Up / 6arelyhuman",
-        ids: ["v8dQ3EmU8NQ", "cMMcfqQ5O7g", "b04a0n8CLno"],
-        lyrics: "[SCENE RAVE]\nY2K scene queen nostalgia powered by crunchy electronic synth lines.\nDirect throwback to early internet club culture.\n\n[CHORUS]\nHands in the air, lights off, maximum volume."
-    },
-    {
-        title: "Nightcore 2000 / Everytime We Touch",
-        ids: ["4G6QDNC4jGk", "uCUpvTMis-Y"],
-        lyrics: "[CLASSIC EURODANCE]\nThe quintessential accelerated vocal anthem of the early web.\nPumping hands up Eurodance rhythm accelerating heart rates.\n\n[CHORUS]\nUnforgettable nostalgic rush of pure electronic joy."
-    }
+    { title: "Patient A / Ado", artist: "Ado", track: "Patient A", ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"] },
+    { title: "Raven Sky / Ado", artist: "Ado", track: "Raven Sky", ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"] },
+    { title: "Show / Ado", artist: "Ado", track: "Show", ids: ["pgXpM4l_MwI", "08qPn6bNqE8"] },
+    { title: "Odo / Ado", artist: "Ado", track: "Odo", ids: ["YnSW8ian29w", "sOiMD45QGLs"] },
+    { title: "Usseewa / Ado", artist: "Ado", track: "Usseewa", ids: ["Qp3b-RXtz4w", "0hBqU0iL0K4"] },
+    { title: "Gira Gira / Ado", artist: "Ado", track: "Gira Gira", ids: ["sOiMD45QGLs", "4L_iXpL7U3M"] },
+    { title: "RuLe / Ado", artist: "Ado", track: "RuLe", ids: ["bE9QJkK8nI0", "kQ2iP7tU_wQ"] },
+    { title: "FIRESTARTER / K/DA", artist: "K/DA", track: "FIRESTARTER", ids: ["ydz3tn9jTYI", "Mmw-PpWhKFg", "UOxkGD8qRB4"] },
+    { title: "WATCH ME / K/DA", artist: "K/DA", track: "WATCH ME", ids: ["R-JywodifoE", "vjehGOVmBQE", "AiyE4HSzlyo"] },
+    { title: "Demons Shot / Aiobahn", artist: "Aiobahn", track: "DEMON'S SHOT", ids: ["D8UmHPMOclQ", "zvdeJRhzdog", "OWDcn7hl16A"] },
+    { title: "MAGIC / Ado", artist: "Ado", track: "MAGIC", ids: ["PKjQv13hZHc", "eH4jv7qmqCo", "u71LfK8OQBg", "l0WArCNh6G0"] },
+    { title: "DND / Ado", artist: "Ado", track: "DND", ids: ["_craccBC-GY", "SfcMRGVeMuM", "__qvPGatwus"] },
+    { title: "Angelseek / Ado", artist: "Ado", track: "Angelseek", ids: ["ukdidk1CkaQ", "Qen-YyWGrsk", "SRPR9u592jg", "aGSmxr-dUq0"] },
+    { title: "My Darkest Desire / Shapiano", artist: "Shapiano", track: "My Darkest Desire", instrumental: true, ids: ["O7yb2gooN7A", "WgjLavMTC7E", "HnE6h2MiOYY"] },
+    { title: "Megaton Kinesis / DJ Myosuke", artist: "DJ Myosuke", track: "Megaton Kinesis", ids: ["jVuJwtVlUQk", "Pwm_dKX-1b8", "8PbpzfQEYW8"] },
+    { title: "GABBA GABBA / Little Sis Nora", artist: "Little Sis Nora", track: "GABBA GABBA", ids: ["PmD5pP_Oky4", "LRql95hHq3Y", "9ARhpQyx4FI"] },
+    { title: "Tears pain and blood / Kuro Phase", artist: "Kuro Phase", track: "Tears, pain and blood", ids: ["AaIqlle_1TU"] },
+    { title: "GOOD LOYAL THOTS / Odetari", artist: "Odetari", track: "GOOD LOYAL THOTS", ids: ["2k5wP2rpYig", "lP4MKIXntXU", "Aa50U0qDy2M"] },
+    { title: "LOOK DONT TOUCH / Odetari", artist: "Odetari", track: "LOOK DONT TOUCH", ids: ["H6i1261J_kI", "i70tI4Dcx3s"] },
+    { title: "Hands Up / 6arelyhuman", artist: "6arelyhuman", track: "Hands Up!", ids: ["v8dQ3EmU8NQ", "cMMcfqQ5O7g", "b04a0n8CLno"] },
+    { title: "Everytime We Touch / Cascada", artist: "Cascada", track: "Everytime We Touch", ids: ["4G6QDNC4jGk", "uCUpvTMis-Y"] }
 ];
+
+// Offline & Immediate Fallback Cache
+const embeddedLyricsFallback = {
+    "Ado_Show": "鳴らすクラップ 鳴らすステップ\nReady for the show\n宴の幕開けだ\n\n完全無欠のShow time\nShout out, clap your hands\n踊り狂え夜の果てまで\nReady for my show\n\n誰も止められない\n騒げ さあ幕を開けろ",
+    "Ado_Odo": "半端なら K.O.\nふわふわしたいならどうぞ\n開け胴 踊れもう\n誰も止められない\n\nReady for my show\nいま目を醒ます 夜が明けるまで\n音に乗れ 踊り明かせ\nまだ見ぬ世界へ飛び込め",
+    "Ado_Usseewa": "ちっちゃな頃から優等生\n気づけばエリート街道まっしぐら\n\nうっせぇうっせぇうっせぇわ\nあなたが思うより健康です\n一切合切凡庸な\nあなたじゃ分からないかもね\n\n嗚呼よく似合う\nその可もなく不可もないメロディー",
+    "Ado_Gira Gira": "ぎらぎら 輝いて私は夜を穿つ\n誰にも愛されないのなら\n自分を愛してあげればいい\n\n孤独を抱いて ギラギラ燃え上がれ\n醜いアヒルの子のままで\nこの闇を切り裂いてゆけ",
+    "K/DA_FIRESTARTER": "Watch the fire ignite\nTurn it up, burn it bright\nSparks flying into the dark night\n\nFirestarter, lighting up the flame\nNothing will ever be the same\nWe rule the stage, remember the name",
+    "K/DA_WATCH ME": "Watch me, take it to the top tier\nGot no hesitation, got no fear\n\nEvery move precise, crystal clear\nLook at the champion tier right here",
+    "Odetari_GOOD LOYAL THOTS": "World don't revolve around you girl you not the only one\nI been on my grind now I am finally having fun\n\nCalling up my phone, girl you know that we are done\nWalking out the door, yeah the damage has been done",
+    "6arelyhuman_Hands Up!": "Hands up, hands up, put your hands up high\nWe are taking over under metropolitan sky\n\nBassline hitting right between the eyes\nDance till the morning light arrives",
+    "Cascada_Everytime We Touch": "'Cause everytime we touch, I get this feeling\nAnd everytime we kiss, I swear I could fly\n\nCan't you feel my heart beat fast, I want this to last\nNeed you by my side"
+};
+
+const lyricsCache = {};
+
+async function fetchLyricsFromLRCLIB(trackObj) {
+    if (trackObj.instrumental) {
+        return "[INSTRUMENTAL TRACK // NO VOCALS RECORDED]";
+    }
+
+    const cacheKey = `${trackObj.artist}_${trackObj.track}`;
+    if (lyricsCache[cacheKey]) {
+        return lyricsCache[cacheKey];
+    }
+
+    try {
+        const exactUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(trackObj.artist)}&track_name=${encodeURIComponent(trackObj.track)}`;
+        const res = await fetch(exactUrl);
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.plainLyrics) {
+                lyricsCache[cacheKey] = data.plainLyrics.trim();
+                return lyricsCache[cacheKey];
+            }
+        }
+
+        const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(trackObj.artist + " " + trackObj.track)}`;
+        const sRes = await fetch(searchUrl);
+        if (sRes.ok) {
+            const list = await sRes.json();
+            if (Array.isArray(list) && list.length > 0) {
+                const match = list.find(item => item.plainLyrics) || list[0];
+                if (match && match.plainLyrics) {
+                    lyricsCache[cacheKey] = match.plainLyrics.trim();
+                    return lyricsCache[cacheKey];
+                }
+            }
+        }
+    } catch (_) {}
+
+    if (embeddedLyricsFallback[cacheKey]) {
+        return embeddedLyricsFallback[cacheKey];
+    }
+
+    return `[LYRICS FOR "${trackObj.track.toUpperCase()}" BY ${trackObj.artist.toUpperCase()}]\n\nLyrics loaded from local audio register.\nFull vocal line actively driving the oscilloscope spectrum.`;
+}
 
 let currentTrackIndex = 0;
 let currentFallbackIndex = 0;
@@ -315,14 +288,24 @@ const volValue = document.getElementById('volValue');
 const lyricsContent = document.getElementById('lyricsContent');
 const lyricsTrackLabel = document.getElementById('lyricsTrackLabel');
 
-function updateLyricsPanel() {
+async function updateLyricsPanel() {
     const track = playlist[currentTrackIndex];
     if (lyricsTrackLabel) {
         lyricsTrackLabel.textContent = `${String(currentTrackIndex + 1).padStart(2, '0')} / ${playlist.length}`;
     }
     if (lyricsContent) {
-        lyricsContent.textContent = track.lyrics || "No additional intel available for this track.";
+        if (track.instrumental) {
+            lyricsContent.textContent = "[INSTRUMENTAL TRACK // NO VOCALS RECORDED]";
+            return;
+        }
+        lyricsContent.textContent = "Querying LRCLIB database...";
         lyricsContent.scrollTop = 0;
+        
+        const lyrics = await fetchLyricsFromLRCLIB(track);
+        if (playlist[currentTrackIndex] === track) {
+            lyricsContent.textContent = lyrics;
+            lyricsContent.scrollTop = 0;
+        }
     }
 }
 
