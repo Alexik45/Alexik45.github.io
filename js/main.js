@@ -190,7 +190,7 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Multi-Fallback Stream Queue (Handles Region/Embed Restrictions Automatically)
+// Multi-Fallback Stream Queue
 const playlist = [
     { title: "Patient A - Ado", ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"] },
     { title: "Raven Sky - Ado", ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"] },
@@ -338,11 +338,9 @@ function renderScope() {
         fpsElement.textContent = `${Math.round(1000 / (delta || 16))} FPS`;
     }
 
-    // Phosphor screen persistence
     scopeCtx.fillStyle = 'rgba(11, 12, 14, 0.34)';
     scopeCtx.fillRect(0, 0, scopeCanvas.width, scopeCanvas.height);
 
-    // Subtle CRT scope grid
     scopeCtx.lineWidth = 0.5;
     scopeCtx.strokeStyle = 'rgba(72, 72, 77, 0.18)';
     scopeCtx.beginPath();
@@ -472,8 +470,25 @@ renderScope();
 
 // Project Database & Modal Controller
 const projectData = {
+    localtools: {
+        id: "01_SUITE",
+        tags: "Fabric.js / PDFLib / Web Audio / WebCrypto / JSZip",
+        title: "tools://local — Client-Side Utilities & Studio",
+        whatIs: "A privacy-focused, zero-telemetry suite of web media processors, developer tools, and in-browser editors. All operations execute 100% client-side inside browser RAM using native Web APIs, WebAssembly, and hardware-accelerated canvases.",
+        whatDoes: "Features an image transcode & Canva-style design studio, frame-by-frame video workbench & screen recorder, 16-bit PCM audio DSP normalizer & trimmer, JSON/CSV bidirectional data matrix & SHA cryptographic digest generator, client-side PDF compiler/watermarker, and in-RAM ZIP packager with byte-level hex inspector.",
+        howWorks: "Follows a zero network egress model where user files, documents, and data buffers never leave the local device. File operations exist strictly in volatile RAM (Blobs, ArrayBuffers, Canvas contexts) and vanish on tab close. Optional offline history is stored locally via localStorage without external synchronization.",
+        demoUrl: "https://alexik45.github.io/local_tools/",
+        techList: [
+            "Hardware-accelerated Canvas & Fabric.js layer engine",
+            "In-memory PDFLib document compiler, splitter & watermarker",
+            "Web Audio API (16-bit PCM WAV transcoder & normalizer)",
+            "Web Crypto API (hardware-accelerated SHA-256 / SHA-512)",
+            "JSZip in-memory archiving & byte-level hexadecimal viewer",
+            "100% client-side RAM execution, zero network egress, zero tracking"
+        ]
+    },
     homeserver: {
-        id: "01_INFRA",
+        id: "02_INFRA",
         tags: "Ubuntu Server / CasaOS / Docker / Tailscale / zrok",
         title: "Self-Hosted Home Server Rig",
         whatIs: "A dedicated 24/7 home server configured on a repurposed low-power machine, tailored for hosting internal web services, microservices, and file backends without high electricity draw.",
@@ -488,7 +503,7 @@ const projectData = {
         ]
     },
     discordbot: {
-        id: "02_BOT",
+        id: "03_BOT",
         tags: "Python / discord.py / PM2 / Linux Daemon",
         title: "Discord Bot & Automation Daemon",
         whatIs: "A custom-built community Discord bot running continuously to handle server administration, interactive tools, event tracking, and background automation.",
@@ -503,7 +518,7 @@ const projectData = {
         ]
     },
     cloudstorage: {
-        id: "03_STORAGE",
+        id: "04_STORAGE",
         tags: "Docker / Seafile / AList / Reverse Proxy",
         title: "Private Cloud & Storage Portal",
         whatIs: "A multi-tiered personal storage network designed to completely replace commercial cloud subscriptions with high-speed private syncing.",
@@ -517,7 +532,7 @@ const projectData = {
         ]
     },
     gameservers: {
-        id: "04_OPS",
+        id: "05_OPS",
         tags: "Bash / Fabric / Minecraft / Cron Daemons",
         title: "Game Server Automation & Daemons",
         whatIs: "Custom management scripts and cron services engineered to operate heavy modded game servers (Fabric, All The Mods, Tekxit) smoothly on local server hardware.",
@@ -532,7 +547,7 @@ const projectData = {
         ]
     },
     portfolio: {
-        id: "05_CLIENT",
+        id: "06_CLIENT",
         tags: "HTML5 / CSS3 / Vanilla JS / Web Audio API / GitHub Pages",
         title: "This Personal Workspace Hub",
         whatIs: "A completely custom, dependency-free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
@@ -557,6 +572,7 @@ const modalWhatIs = document.getElementById('modalWhatIs');
 const modalWhatDoes = document.getElementById('modalWhatDoes');
 const modalHowWorks = document.getElementById('modalHowWorks');
 const modalTechList = document.getElementById('modalTechList');
+const modalActionContainer = document.getElementById('modalActionContainer');
 
 function openProjectModal(key) {
     const item = projectData[key];
@@ -575,6 +591,17 @@ function openProjectModal(key) {
         li.textContent = tech;
         modalTechList.appendChild(li);
     });
+
+    modalActionContainer.innerHTML = '';
+    if (item.demoUrl) {
+        const btn = document.createElement('a');
+        btn.href = item.demoUrl;
+        btn.target = '_blank';
+        btn.rel = 'noreferrer';
+        btn.className = 'modal-demo-btn';
+        btn.textContent = 'Launch Live Demo ↗';
+        modalActionContainer.appendChild(btn);
+    }
 
     modalBackdrop.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -635,13 +662,19 @@ if (cliInput) {
             printCliLine(`alex@box:~$ ${raw}`);
 
             if (raw === 'help') {
-                printCliLine('Commands: status, server, stack, ping, play, pause, next, clear, exit');
+                printCliLine('Commands: status, server, tools, stack, email, kofi, ping, play, pause, next, clear, exit');
             } else if (raw === 'status') {
                 printCliLine('SYS: Ubuntu Server 24/7 | CRT: active | SFX: active');
             } else if (raw === 'server') {
                 printCliLine('Box: CasaOS / Docker / Tailscale / Seafile / PM2');
+            } else if (raw === 'tools') {
+                printCliLine('tools://local -> https://alexik45.github.io/local_tools/');
             } else if (raw === 'stack') {
                 printCliLine('Languages: Python, C, C#, JavaScript, HTML, CSS, SQL');
+            } else if (raw === 'email') {
+                printCliLine('Direct email: contact.alexandr@proton.me');
+            } else if (raw === 'kofi') {
+                printCliLine('Ko-fi: https://ko-fi.com/alexik45#setGoalModal');
             } else if (raw === 'ping') {
                 printCliLine(`Latency to gateway: ${Math.floor(18 + Math.random() * 8)}ms`);
             } else if (raw === 'play') {
