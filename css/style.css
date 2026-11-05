@@ -266,7 +266,7 @@ main {
 }
 
 .section-heading {
-    margin-bottom: 36px;
+    margin-bottom: 24px;
 }
 
 .section-meta {
@@ -293,6 +293,39 @@ main {
     font-size: 32px;
     font-weight: 800;
     letter-spacing: -0.02em;
+}
+
+.project-filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-accent);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+.filter-btn.active {
+    background: var(--accent-slate);
+    color: #ffffff;
+    border-color: var(--accent-highlight);
+    box-shadow: 0 0 10px rgba(72, 72, 77, 0.4);
 }
 
 .hero-section {
@@ -685,6 +718,10 @@ main {
     padding: 26px;
     display: flex;
     flex-direction: column;
+}
+
+.project-card.is-hidden {
+    display: none !important;
 }
 
 .project-header {
