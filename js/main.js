@@ -190,15 +190,15 @@ function triggerTone(freq, type = 'sine', duration = 0.06, gainVal = 0.03) {
     } catch (_) {}
 }
 
-// Multi-Fallback Stream Queue
+// Multi Fallback Stream Queue
 const playlist = [
-    { title: "Patient A - Ado", ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"] },
-    { title: "Raven Sky - Ado", ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"] },
-    { title: "FIRESTARTER - K/DA", ids: ["ydz3tn9jTYI", "Mmw-PpWhKFg", "UOxkGD8qRB4"] },
-    { title: "Demons Shot - Aiobahn +81", ids: ["D8UmHPMOclQ", "zvdeJRhzdog", "OWDcn7hl16A"] },
-    { title: "MAGIC - Ado", ids: ["PKjQv13hZHc", "eH4jv7qmqCo", "u71LfK8OQBg", "l0WArCNh6G0"] },
-    { title: "DND - Ado", ids: ["_craccBC-GY", "SfcMRGVeMuM", "__qvPGatwus"] },
-    { title: "Angelseek - Ado", ids: ["ukdidk1CkaQ", "Qen-YyWGrsk", "SRPR9u592jg", "aGSmxr-dUq0"] }
+    { title: "Patient A / Ado", ids: ["7LxIZOIZriE", "TvW_Tq0TRv8", "pREqYDYY0Po", "JO66tA5Yngs"] },
+    { title: "Raven Sky / Ado", ids: ["WDhlccPZ-JA", "pGD4xvxpM0w", "eVenA9J72to", "7DBSMzbPQzc"] },
+    { title: "FIRESTARTER / K/DA", ids: ["ydz3tn9jTYI", "Mmw-PpWhKFg", "UOxkGD8qRB4"] },
+    { title: "Demons Shot / Aiobahn +81", ids: ["D8UmHPMOclQ", "zvdeJRhzdog", "OWDcn7hl16A"] },
+    { title: "MAGIC / Ado", ids: ["PKjQv13hZHc", "eH4jv7qmqCo", "u71LfK8OQBg", "l0WArCNh6G0"] },
+    { title: "DND / Ado", ids: ["_craccBC-GY", "SfcMRGVeMuM", "__qvPGatwus"] },
+    { title: "Angelseek / Ado", ids: ["ukdidk1CkaQ", "Qen-YyWGrsk", "SRPR9u592jg", "aGSmxr-dUq0"] }
 ];
 
 let currentTrackIndex = 0;
@@ -308,7 +308,7 @@ volumeSlider.addEventListener('input', (e) => {
     }
 });
 
-// High-Dynamic Hardware Oscilloscope Engine
+// High Dynamic Hardware Oscilloscope Engine
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 const waveModeBtn = document.getElementById('waveModeToggle');
@@ -468,37 +468,63 @@ function renderScope() {
 }
 renderScope();
 
+// Project Category Filtering Controller
+const filterBtns = document.querySelectorAll('.filter-btn');
+const projectCards = document.querySelectorAll('.project-card');
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+
+        projectCards.forEach(card => {
+            if (card.classList.contains('wip-card')) {
+                card.classList.remove('is-hidden');
+                return;
+            }
+            const cat = card.dataset.category;
+            if (filter === 'all' || cat === filter) {
+                card.classList.remove('is-hidden');
+            } else {
+                card.classList.add('is-hidden');
+            }
+        });
+        triggerTone(720, 'sine', 0.03, 0.03);
+    });
+});
+
 // Project Database & Modal Controller
 const projectData = {
     localtools: {
         id: "01_SUITE",
         tags: "Fabric.js / PDFLib / Web Audio / WebCrypto / JSZip",
-        title: "tools://local — Client-Side Utilities & Studio",
-        whatIs: "A privacy-focused, zero-telemetry suite of web media processors, developer tools, and in-browser editors. All operations execute 100% client-side inside browser RAM using native Web APIs, WebAssembly, and hardware-accelerated canvases.",
-        whatDoes: "Features an image transcode & Canva-style design studio, frame-by-frame video workbench & screen recorder, 16-bit PCM audio DSP normalizer & trimmer, JSON/CSV bidirectional data matrix & SHA cryptographic digest generator, client-side PDF compiler/watermarker, and in-RAM ZIP packager with byte-level hex inspector.",
+        title: "tools://local: Client Side Utilities & Studio",
+        whatIs: "A privacy focused, zero telemetry suite of web media processors, developer tools, and in browser editors. All operations execute 100% client side inside browser RAM using native Web APIs, WebAssembly, and hardware accelerated canvases.",
+        whatDoes: "Features an image transcode and Canva style design studio, frame by frame video workbench and screen recorder, 16 bit PCM audio DSP normalizer and trimmer, JSON CSV bidirectional data matrix and SHA cryptographic digest generator, client side PDF compiler watermarker, and in RAM ZIP packager with byte level hex inspector.",
         howWorks: "Follows a zero network egress model where user files, documents, and data buffers never leave the local device. File operations exist strictly in volatile RAM (Blobs, ArrayBuffers, Canvas contexts) and vanish on tab close. Optional offline history is stored locally via localStorage without external synchronization.",
         demoUrl: "https://alexik45.github.io/local-tools/",
         techList: [
-            "Hardware-accelerated Canvas & Fabric.js layer engine",
-            "In-memory PDFLib document compiler, splitter & watermarker",
-            "Web Audio API (16-bit PCM WAV transcoder & normalizer)",
-            "Web Crypto API (hardware-accelerated SHA-256 / SHA-512)",
-            "JSZip in-memory archiving & byte-level hexadecimal viewer",
-            "100% client-side RAM execution, zero network egress, zero tracking"
+            "Hardware accelerated Canvas and Fabric.js layer engine",
+            "In memory PDFLib document compiler, splitter and watermarker",
+            "Web Audio API (16 bit PCM WAV transcoder and normalizer)",
+            "Web Crypto API (hardware accelerated SHA 256 and SHA 512)",
+            "JSZip in memory archiving and byte level hexadecimal viewer",
+            "100% client side RAM execution, zero network egress, zero tracking"
         ]
     },
     homeserver: {
         id: "02_INFRA",
         tags: "Ubuntu Server / CasaOS / Docker / Tailscale / zrok",
-        title: "Self-Hosted Home Server Rig",
-        whatIs: "A dedicated 24/7 home server configured on a repurposed low-power machine, tailored for hosting internal web services, microservices, and file backends without high electricity draw.",
+        title: "Self Hosted Home Server Rig",
+        whatIs: "A dedicated 24/7 home server configured on a repurposed low power machine, tailored for hosting internal web services, microservices, and file backends without high electricity draw.",
         whatDoes: "Runs containerized services around the clock, handles secure remote connections, hosts private Discord bots and automations, and provides a personal cloud environment accessible from anywhere without opening vulnerable router ports.",
-        howWorks: "Built on Ubuntu Server with CasaOS acting as a lightweight container orchestrator. Remote access is routed securely through a Tailscale mesh network and encrypted zrok tunnels. Wi-Fi interfaces and network drivers were configured directly in the terminal, while custom systemd daemons keep background containers running reliably through network drops.",
+        howWorks: "Built on Ubuntu Server with CasaOS acting as a lightweight container orchestrator. Remote access is routed securely through a Tailscale mesh network and encrypted zrok tunnels. Wi Fi interfaces and network drivers were configured directly in the terminal, while custom systemd daemons keep background containers running reliably through network drops.",
         techList: [
             "Ubuntu Server minimal OS",
             "CasaOS container orchestration & Docker daemon",
             "Tailscale secure mesh VPN & zrok outbound tunnels",
-            "TP-Link high-gain Wi-Fi driver compilation & network configs",
+            "TP Link high gain Wi Fi driver compilation & network configs",
             "Zero open ports on router for security"
         ]
     },
@@ -506,9 +532,9 @@ const projectData = {
         id: "03_BOT",
         tags: "Python / discord.py / PM2 / Linux Daemon",
         title: "Discord Bot & Automation Daemon",
-        whatIs: "A custom-built community Discord bot running continuously to handle server administration, interactive tools, event tracking, and background automation.",
+        whatIs: "A custom built community Discord bot running continuously to handle server administration, interactive tools, event tracking, and background automation.",
         whatDoes: "Manages member verification, role assignments, dynamic embeds, server utility commands, automated cleanups, and notifies community channels of updates or server state changes.",
-        howWorks: "Written in asynchronous Python utilizing modern discord.py library architecture. Deployed on the home server and managed via process managers (PM2 and systemd services) that monitor memory limits, handle auto-restart on crashes or server reboots, and log all events to disk.",
+        howWorks: "Written in asynchronous Python utilizing modern discord.py library architecture. Deployed on the home server and managed via process managers (PM2 and systemd services) that monitor memory limits, handle auto restart on crashes or server reboots, and log all events to disk.",
         techList: [
             "Python 3 with discord.py async framework",
             "PM2 / systemd background process supervisor",
@@ -521,12 +547,12 @@ const projectData = {
         id: "04_STORAGE",
         tags: "Docker / Seafile / AList / Reverse Proxy",
         title: "Private Cloud & Storage Portal",
-        whatIs: "A multi-tiered personal storage network designed to completely replace commercial cloud subscriptions with high-speed private syncing.",
+        whatIs: "A multi tiered personal storage network designed to completely replace commercial cloud subscriptions with high speed private syncing.",
         whatDoes: "Syncs workspaces, media files, and backups seamlessly across phones, laptops, and the server. Also provides an aggregated single web dashboard to view and stream stored assets directly.",
-        howWorks: "Runs Seafile server inside Docker containers for reliable delta-syncing across client machines, while AList is deployed to mount and aggregate multiple drives into a unified browser explorer. Bound to local network addresses and tunneled securely for mobile access outside the home.",
+        howWorks: "Runs Seafile server inside Docker containers for reliable delta syncing across client machines, while AList is deployed to mount and aggregate multiple drives into a unified browser explorer. Bound to local network addresses and tunneled securely for mobile access outside the home.",
         techList: [
             "Seafile server backend for delta block syncing",
-            "AList file aggregation & web-based explorer interface",
+            "AList file aggregation & web based explorer interface",
             "Docker persistent volume mapping & permission handling",
             "Encrypted sync connections between Linux & Windows endpoints"
         ]
@@ -537,22 +563,22 @@ const projectData = {
         title: "Game Server Automation & Daemons",
         whatIs: "Custom management scripts and cron services engineered to operate heavy modded game servers (Fabric, All The Mods, Tekxit) smoothly on local server hardware.",
         whatDoes: "Handles scheduled server restarts, checks memory utilization to prevent Java memory leaks, triggers automated world archive backups, and pings Discord webhooks when players join or crashes occur.",
-        howWorks: "Written in Bash and hooked into Linux cron daemons and screen/tmux sessions. The scripts periodically poll the running Java processes, pipe commands into the server console gracefully, compress world folders into backup storage, and notify Discord through HTTP curl webhooks.",
+        howWorks: "Written in Bash and hooked into Linux cron daemons and screen tmux sessions. The scripts periodically poll the running Java processes, pipe commands into the server console gracefully, compress world folders into backup storage, and notify Discord through HTTP curl webhooks.",
         techList: [
             "Custom Bash shell scripts with cron scheduling",
             "tmux / screen background session management",
             "Garbage collection tuning & automated memory reclamation",
             "Discord webhook notifications for server events",
-            "Automated tar.gz rotating backups"
+            "Automated tar gz rotating backups"
         ]
     },
     portfolio: {
         id: "06_CLIENT",
         tags: "HTML5 / CSS3 / Vanilla JS / Web Audio API / GitHub Pages",
         title: "This Personal Workspace Hub",
-        whatIs: "A completely custom, dependency-free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
-        whatDoes: "Renders interactive point-mass physics simulations, processes background audio streams into dynamic oscilloscope waveforms, provides an interactive CLI drawer, and displays infrastructure logs.",
-        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet/Euler integration for spring constraints. Audio is handled via background YouTube API streaming with automatic fallback stream switching and Web Audio procedural synthesis.",
+        whatIs: "A completely custom, dependency free personal web application and experimental frontend laboratory created to document projects and explore browser technologies without bulky frameworks.",
+        whatDoes: "Renders interactive point mass physics simulations, processes background audio streams into dynamic oscilloscope waveforms, provides an interactive CLI drawer, and displays infrastructure logs.",
+        howWorks: "Built from scratch using native web standards. Physics run on requestAnimationFrame with Verlet Euler integration for spring constraints. Audio is handled via background YouTube API streaming with automatic fallback stream switching and Web Audio procedural synthesis.",
         techList: [
             "Semantic HTML5 & modular CSS custom property tokens",
             "Vanilla JavaScript ESNext without bundlers or dependencies",
@@ -668,7 +694,7 @@ if (cliInput) {
             } else if (raw === 'server') {
                 printCliLine('Box: CasaOS / Docker / Tailscale / Seafile / PM2');
             } else if (raw === 'tools') {
-                printCliLine('tools://local -> https://alexik45.github.io/local_tools/');
+                printCliLine('tools://local -> https://alexik45.github.io/local-tools/');
             } else if (raw === 'stack') {
                 printCliLine('Languages: Python, C, C#, JavaScript, HTML, CSS, SQL');
             } else if (raw === 'email') {
