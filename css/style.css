@@ -405,6 +405,8 @@ main {
     gap: 8px;
     min-height: 42px;
     cursor: pointer;
+    background: transparent;
+    border: none;
     transition: all 0.15s ease;
 }
 
@@ -608,7 +610,7 @@ main {
     color: var(--text-primary);
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-accent);
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 2px;
     cursor: pointer;
     font-family: var(--font-mono);
@@ -618,6 +620,7 @@ main {
 .pill-mini-btn:hover {
     border-color: var(--border-hover);
     color: #ffffff;
+    background: var(--accent-slate);
 }
 
 .synth-pads {
@@ -956,7 +959,7 @@ main {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    line-height: 1.5;
+    line-line: 1.5;
 }
 
 .modal-list li::before {
@@ -984,6 +987,148 @@ main {
 .modal-demo-btn:hover {
     background: #ffffff;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Dispatch Email Modal Styles */
+.email-modal-window {
+    max-width: 600px;
+}
+
+.email-direct-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-base);
+    margin-bottom: 22px;
+    border-radius: 2px;
+    gap: 12px;
+}
+
+.email-box-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.email-box-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+}
+
+.email-box-addr {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+}
+
+.form-text-input,
+.form-textarea {
+    background: var(--bg-base);
+    border: 1px solid var(--border-base);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 10px 12px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+    width: 100%;
+}
+
+.form-text-input:focus,
+.form-textarea:focus {
+    border-color: var(--border-hover);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.email-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-base);
+}
+
+.modal-action-btn {
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.modal-action-btn.primary-action {
+    background: var(--text-primary);
+    color: var(--bg-base);
+    font-weight: 600;
+    border: none;
+    grid-column: span 2;
+}
+
+.modal-action-btn.primary-action:hover {
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.modal-action-btn.ghost-action {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-accent);
+    color: var(--text-primary);
+}
+
+.modal-action-btn.ghost-action:hover {
+    border-color: var(--border-hover);
+    background: var(--accent-slate);
+}
+
+.footer-anchor-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.15s ease;
+}
+
+.footer-anchor-btn:hover {
+    color: var(--text-primary);
 }
 
 .cli-drawer {
@@ -1108,6 +1253,7 @@ main {
 
 .footer-right {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -1229,6 +1375,14 @@ main {
 
     .modal-title {
         font-size: 20px;
+    }
+
+    .email-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-action-btn.primary-action {
+        grid-column: span 1;
     }
 
     .footer-inner {
