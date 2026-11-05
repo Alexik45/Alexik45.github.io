@@ -477,7 +477,7 @@ const projectData = {
         whatIs: "A privacy-focused, zero-telemetry suite of web media processors, developer tools, and in-browser editors. All operations execute 100% client-side inside browser RAM using native Web APIs, WebAssembly, and hardware-accelerated canvases.",
         whatDoes: "Features an image transcode & Canva-style design studio, frame-by-frame video workbench & screen recorder, 16-bit PCM audio DSP normalizer & trimmer, JSON/CSV bidirectional data matrix & SHA cryptographic digest generator, client-side PDF compiler/watermarker, and in-RAM ZIP packager with byte-level hex inspector.",
         howWorks: "Follows a zero network egress model where user files, documents, and data buffers never leave the local device. File operations exist strictly in volatile RAM (Blobs, ArrayBuffers, Canvas contexts) and vanish on tab close. Optional offline history is stored locally via localStorage without external synchronization.",
-        demoUrl: "https://alexik45.github.io/local_tools/",
+        demoUrl: "https://alexik45.github.io/local-tools/",
         techList: [
             "Hardware-accelerated Canvas & Fabric.js layer engine",
             "In-memory PDFLib document compiler, splitter & watermarker",
