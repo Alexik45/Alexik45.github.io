@@ -477,7 +477,6 @@ main {
     cursor: pointer;
 }
 
-/* Dual Deck: Player & Lyrics Terminal */
 .media-dual-deck {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -493,7 +492,6 @@ main {
     background: #0d0f13;
     border: 1px solid var(--border-base);
     gap: 10px;
-    height: 140px;
 }
 
 .player-top-row {
@@ -567,14 +565,13 @@ main {
     text-align: right;
 }
 
-/* Expanded Real Lyrics Terminal Box */
 .track-lyrics-panel {
     background: #0d0f13;
     border: 1px solid var(--border-base);
     padding: 10px 12px;
     display: flex;
     flex-direction: column;
-    height: 140px;
+    height: 125px;
     overflow: hidden;
 }
 
@@ -585,10 +582,9 @@ main {
     font-size: 9px;
     color: var(--text-muted);
     padding-bottom: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 8px;
     letter-spacing: 0.04em;
-    flex-shrink: 0;
 }
 
 .lyrics-tag {
@@ -604,28 +600,19 @@ main {
     flex-grow: 1;
     overflow-y: auto;
     font-size: 11px;
-    line-height: 1.55;
-    color: var(--text-secondary);
-    white-space: pre-wrap;
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre-line;
     padding-right: 6px;
     font-family: var(--font-mono);
 }
 
 .lyrics-body::-webkit-scrollbar {
-    width: 4px;
-}
-
-.lyrics-body::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
+    width: 3px;
 }
 
 .lyrics-body::-webkit-scrollbar-thumb {
     background: var(--border-accent);
-    border-radius: 2px;
-}
-
-.lyrics-body::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-highlight);
 }
 
 .viewport-footer {
@@ -1414,14 +1401,6 @@ main {
 
     .media-dual-deck {
         grid-template-columns: 1fr;
-    }
-
-    .ado-player-bar {
-        height: auto;
-    }
-
-    .track-lyrics-panel {
-        height: 120px;
     }
 
     .modal-backdrop {
