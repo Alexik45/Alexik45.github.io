@@ -80,7 +80,7 @@ function triggerShockwave(x, y, power = 24, radius = 220) {
 }
 
 window.addEventListener('pointerdown', (e) => {
-    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'INPUT') {
+    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
         triggerShockwave(e.clientX, e.clientY, 18, 180);
     }
 });
@@ -653,6 +653,88 @@ modalBackdrop.addEventListener('click', (e) => {
     if (e.target === modalBackdrop) closeProjectModal();
 });
 
+// Dispatch Email Modal Controller
+const emailModal = document.getElementById('emailModal');
+const emailModalCloseBtn = document.getElementById('emailModalCloseBtn');
+const emailTriggerBtn = document.getElementById('emailTriggerBtn');
+const footerEmailBtn = document.getElementById('footerEmailBtn');
+const modalCopyAddrBtn = document.getElementById('modalCopyAddrBtn');
+const emailSendClientBtn = document.getElementById('emailSendClientBtn');
+const emailOpenGmailBtn = document.getElementById('emailOpenGmailBtn');
+const emailCopyDraftBtn = document.getElementById('emailCopyDraftBtn');
+const copyDraftLabel = document.getElementById('copyDraftLabel');
+
+const emailSenderInput = document.getElementById('emailSenderInput');
+const emailSubjectInput = document.getElementById('emailSubjectInput');
+const emailBodyInput = document.getElementById('emailBodyInput');
+
+const TARGET_EMAIL = 'contact.alexandr@proton.me';
+
+function openEmailModal() {
+    emailModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    triggerTone(640, 'sine', 0.05, 0.04);
+}
+
+function closeEmailModal() {
+    if (!emailModal.classList.contains('active')) return;
+    emailModal.classList.remove('active');
+    document.body.style.overflow = '';
+    triggerTone(380, 'sine', 0.04, 0.03);
+}
+
+if (emailTriggerBtn) emailTriggerBtn.addEventListener('click', openEmailModal);
+if (footerEmailBtn) footerEmailBtn.addEventListener('click', openEmailModal);
+if (emailModalCloseBtn) emailModalCloseBtn.addEventListener('click', closeEmailModal);
+
+emailModal.addEventListener('click', (e) => {
+    if (e.target === emailModal) closeEmailModal();
+});
+
+modalCopyAddrBtn.addEventListener('click', async () => {
+    try {
+        await navigator.clipboard.writeText(TARGET_EMAIL);
+        modalCopyAddrBtn.textContent = 'Copied!';
+        triggerTone(920, 'sine', 0.06, 0.04);
+        setTimeout(() => modalCopyAddrBtn.textContent = 'Copy Address', 2000);
+    } catch (_) {}
+});
+
+function getEmailData() {
+    const sender = emailSenderInput.value.trim();
+    const subject = emailSubjectInput.value.trim() || 'Inquiry from alex1k45 portfolio';
+    let body = emailBodyInput.value.trim();
+    if (sender) {
+        body = `Sender: ${sender}\n\n${body}`;
+    }
+    return { subject, body };
+}
+
+emailSendClientBtn.addEventListener('click', () => {
+    const { subject, body } = getEmailData();
+    const mailtoUri = `mailto:${TARGET_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUri;
+    triggerTone(780, 'sine', 0.05, 0.04);
+});
+
+emailOpenGmailBtn.addEventListener('click', () => {
+    const { subject, body } = getEmailData();
+    const gmailUri = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(TARGET_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUri, '_blank');
+    triggerTone(780, 'sine', 0.05, 0.04);
+});
+
+emailCopyDraftBtn.addEventListener('click', async () => {
+    const { subject, body } = getEmailData();
+    const fullDraft = `To: ${TARGET_EMAIL}\nSubject: ${subject}\n\n${body}`;
+    try {
+        await navigator.clipboard.writeText(fullDraft);
+        copyDraftLabel.textContent = 'Copied to Clipboard!';
+        triggerTone(920, 'sine', 0.06, 0.04);
+        setTimeout(() => copyDraftLabel.textContent = 'Copy Draft Text', 2000);
+    } catch (_) {}
+});
+
 // Interactive Shell Drawer
 const cliDrawer = document.getElementById('cliDrawer');
 const cliToggle = document.getElementById('cliToggle');
@@ -698,7 +780,8 @@ if (cliInput) {
             } else if (raw === 'stack') {
                 printCliLine('Languages: Python, C, C#, JavaScript, HTML, CSS, SQL');
             } else if (raw === 'email') {
-                printCliLine('Direct email: contact.alexandr@proton.me');
+                openEmailModal();
+                printCliLine('Opened dispatch email gateway.');
             } else if (raw === 'kofi') {
                 printCliLine('Ko-fi: https://ko-fi.com/alexik45#setGoalModal');
             } else if (raw === 'ping') {
@@ -728,6 +811,7 @@ if (cliInput) {
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeProjectModal();
+        closeEmailModal();
         if (cliDrawer.classList.contains('active')) toggleCli();
     }
     if (e.key === '`' || e.key === '~') {
@@ -736,7 +820,7 @@ window.addEventListener('keydown', (e) => {
     }
     if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
         const pad = document.querySelector(`.audio-pad[data-key="${e.key}"]`);
-        if (pad && document.activeElement !== cliInput) {
+        if (pad && document.activeElement !== cliInput && document.activeElement !== emailSenderInput && document.activeElement !== emailSubjectInput && document.activeElement !== emailBodyInput) {
             const freq = parseFloat(pad.dataset.freq);
             pad.classList.add('pad-active');
             triggerTone(freq, 'triangle', 0.35, 0.06);
@@ -862,7 +946,7 @@ crtBtn.addEventListener('click', () => {
     triggerTone(crtActive ? 520 : 330, 'triangle', 0.06, 0.03);
 });
 
-document.querySelectorAll('a, button, input, .interactive-card').forEach(el => {
+document.querySelectorAll('a, button, input, textarea, .interactive-card').forEach(el => {
     el.addEventListener('pointerenter', () => {
         if (el !== soundBtn && el !== crtBtn && window.matchMedia('(hover: hover)').matches) {
             triggerTone(1200, 'sine', 0.015, 0.012);
