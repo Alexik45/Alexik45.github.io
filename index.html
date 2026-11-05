@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/style.css?v=9">
+        <link rel="stylesheet" href="css/style.css?v=11">
     </head>
     <body>
         <canvas id="warpGridCanvas"></canvas>
@@ -91,32 +91,40 @@
                                 MODE: <span id="waveModeLabel">AUDIO SYNC</span> ⟳
                             </button>
                         </div>
-                        <canvas id="scopeCanvas" width="460" height="240"></canvas>
                         
-                        <div class="media-dual-deck">
-                            <div class="ado-player-bar">
-                                <div class="player-top-row">
-                                    <button id="musicPlayBtn" class="player-btn" title="Play / Pause background audio">▶ PLAY</button>
-                                    <button id="musicNextBtn" class="player-btn" title="Next track">⏭</button>
-                                    <div class="track-info">
-                                        <span class="track-tag">STREAM QUEUE</span>
-                                        <span id="currentTrackTitle" class="track-name">Patient A / Ado</span>
+                        <div class="viewport-duo-stage">
+                            <div class="stage-left">
+                                <canvas id="scopeCanvas" width="460" height="230"></canvas>
+                                
+                                <div class="ado-player-bar">
+                                    <div class="player-top-row">
+                                        <button id="musicPlayBtn" class="player-btn" title="Play / Pause background audio">▶ PLAY</button>
+                                        <button id="musicNextBtn" class="player-btn" title="Next track">⏭</button>
+                                        <div class="track-info">
+                                            <span class="track-tag">STREAM QUEUE</span>
+                                            <span id="currentTrackTitle" class="track-name">Patient A / Ado</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="player-bottom-row">
-                                    <span class="vol-label">VOL</span>
-                                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.15" class="vol-slider" title="Volume">
-                                    <span id="volValue" class="vol-display">15%</span>
+                                    <div class="player-bottom-row">
+                                        <span class="vol-label">VOL</span>
+                                        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.15" class="vol-slider" title="Volume">
+                                        <span id="volValue" class="vol-display">15%</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="track-lyrics-panel corner-frame">
-                                <div class="lyrics-topbar">
-                                    <span class="lyrics-tag">LIVE LYRICS // LRCLIB</span>
-                                    <span id="lyricsTrackLabel" class="lyrics-index">01 / 21</span>
+                            <div class="stage-right lyrics-panel corner-frame" id="lyricsPanel">
+                                <div class="lyrics-panel-header">
+                                    <span class="lyrics-badge">LIVE SYNC</span>
+                                    <span id="lyricsTrackLabel" class="lyrics-track-counter">01 / 21</span>
                                 </div>
-                                <div id="lyricsContent" class="lyrics-body">
-                                    Querying lyrics database...
+                                <div class="lyrics-stage" id="lyricsStage">
+                                    <div class="lyrics-scroller" id="lyricsScroller"></div>
+                                    <div class="lyrics-empty" id="lyricsEmpty" style="display: none;">
+                                        <span class="empty-code">STATUS // NULL</span>
+                                        <span class="empty-title">No available lyrics</span>
+                                        <span class="empty-desc">Instrumental or unregistered track</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -482,6 +490,6 @@
         </footer>
 
         <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="js/main.js?v=9"></script>
+        <script src="js/main.js?v=11"></script>
     </body>
 </html>
