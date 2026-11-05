@@ -561,6 +561,84 @@ main {
     text-align: right;
 }
 
+/* Lyrics Terminal Monitor */
+.lyrics-monitor {
+    margin-top: 8px;
+    background: #08090b;
+    border: 1px solid var(--border-base);
+    padding: 10px 12px;
+    border-radius: 2px;
+}
+
+.lyrics-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    font-size: 10px;
+}
+
+.lyrics-indicator {
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.lyrics-pulse {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-highlight);
+    box-shadow: 0 0 6px var(--accent-highlight);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.lyrics-song-title {
+    color: var(--accent-highlight);
+    font-weight: 600;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lyrics-content-box {
+    max-height: 105px;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    padding-right: 4px;
+    scroll-behavior: smooth;
+}
+
+.lyrics-content-box::-webkit-scrollbar {
+    width: 4px;
+}
+
+.lyrics-content-box::-webkit-scrollbar-track {
+    background: #0c0d10;
+}
+
+.lyrics-content-box::-webkit-scrollbar-thumb {
+    background: var(--border-accent);
+    border-radius: 2px;
+}
+
+.lyrics-content-box p {
+    margin-bottom: 4px;
+}
+
+.lyrics-loading {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 .viewport-footer {
     display: flex;
     justify-content: space-between;
@@ -959,7 +1037,7 @@ main {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    line-line: 1.5;
+    line-height: 1.5;
 }
 
 .modal-list li::before {
@@ -989,7 +1067,6 @@ main {
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
 }
 
-/* Dispatch Email Modal Styles */
 .email-modal-window {
     max-width: 600px;
 }
