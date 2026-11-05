@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/style.css?v=7">
+        <link rel="stylesheet" href="css/style.css?v=8">
     </head>
     <body>
         <canvas id="warpGridCanvas"></canvas>
@@ -106,6 +106,17 @@
                                 <span class="vol-label">VOL</span>
                                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.15" class="vol-slider" title="Volume">
                                 <span id="volValue" class="vol-display">15%</span>
+                            </div>
+                        </div>
+
+                        <!-- Lyrics Terminal Monitor -->
+                        <div class="lyrics-monitor">
+                            <div class="lyrics-topbar">
+                                <span class="lyrics-indicator"><span class="lyrics-pulse"></span>LYRICS DECODER</span>
+                                <span id="lyricsTrackLabel" class="lyrics-song-title">Patient A / Ado</span>
+                            </div>
+                            <div id="lyricsContentBox" class="lyrics-content-box">
+                                <p class="lyrics-loading">Parsing vocal stream...</p>
                             </div>
                         </div>
 
@@ -385,7 +396,6 @@
             </div>
         </div>
 
-        <!-- Dispatch Email Modal -->
         <div id="emailModal" class="modal-backdrop">
             <div class="modal-window corner-frame email-modal-window">
                 <div class="modal-header">
@@ -471,6 +481,6 @@
         </footer>
 
         <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="js/main.js?v=7"></script>
+        <script src="js/main.js?v=8"></script>
     </body>
 </html>
