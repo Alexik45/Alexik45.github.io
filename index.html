@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/style.css?v=4">
+        <link rel="stylesheet" href="css/style.css?v=5">
     </head>
     <body>
         <canvas id="warpGridCanvas"></canvas>
@@ -77,6 +77,10 @@
                                 <span>GitHub</span>
                                 <span class="btn-arrow">↗</span>
                             </a>
+                            <a href="mailto:contact.alexandr@proton.me" class="action-btn action-ghost" title="Direct Email">
+                                <span>Email</span>
+                                <span class="btn-arrow">↗</span>
+                            </a>
                         </div>
                     </div>
 
@@ -88,7 +92,7 @@
                             </button>
                         </div>
                         <canvas id="scopeCanvas" width="460" height="240"></canvas>
-
+                        
                         <div class="ado-player-bar">
                             <div class="player-left">
                                 <button id="musicPlayBtn" class="player-btn" title="Play / Pause background audio">▶ PLAY</button>
@@ -178,9 +182,29 @@
                 </div>
 
                 <div class="project-matrix">
+                    <article class="project-card corner-frame interactive-card" data-project="localtools">
+                        <div class="project-header">
+                            <span class="project-mono">01_SUITE</span>
+                            <div class="project-tags">
+                                <span>Fabric.js</span>
+                                <span>PDFLib</span>
+                                <span>WebCrypto</span>
+                                <span>100% RAM</span>
+                            </div>
+                        </div>
+                        <h3 class="project-heading">tools://local — Client Suite</h3>
+                        <p class="project-detail">
+                            Zero-telemetry client-side media processor and studio suite. Image Canva studio, video frame workbench, audio DSP normalizer, PDF compiler, and in-RAM ZIP hex inspector.
+                        </p>
+                        <div class="project-footer">
+                            <span class="card-action-hint">Click to inspect setup ↗</span>
+                            <a href="https://alexik45.github.io/local_tools/" target="_blank" rel="noreferrer" class="card-direct-link" onclick="event.stopPropagation()">Live Demo ↗</a>
+                        </div>
+                    </article>
+
                     <article class="project-card corner-frame interactive-card" data-project="homeserver">
                         <div class="project-header">
-                            <span class="project-mono">01_INFRA</span>
+                            <span class="project-mono">02_INFRA</span>
                             <div class="project-tags">
                                 <span>Ubuntu</span>
                                 <span>CasaOS</span>
@@ -198,7 +222,7 @@
 
                     <article class="project-card corner-frame interactive-card" data-project="discordbot">
                         <div class="project-header">
-                            <span class="project-mono">02_BOT</span>
+                            <span class="project-mono">03_BOT</span>
                             <div class="project-tags">
                                 <span>Python</span>
                                 <span>discord.py</span>
@@ -216,7 +240,7 @@
 
                     <article class="project-card corner-frame interactive-card" data-project="cloudstorage">
                         <div class="project-header">
-                            <span class="project-mono">03_STORAGE</span>
+                            <span class="project-mono">04_STORAGE</span>
                             <div class="project-tags">
                                 <span>Docker</span>
                                 <span>Seafile</span>
@@ -234,7 +258,7 @@
 
                     <article class="project-card corner-frame interactive-card" data-project="gameservers">
                         <div class="project-header">
-                            <span class="project-mono">04_OPS</span>
+                            <span class="project-mono">05_OPS</span>
                             <div class="project-tags">
                                 <span>Linux</span>
                                 <span>Bash</span>
@@ -252,7 +276,7 @@
 
                     <article class="project-card corner-frame interactive-card" data-project="portfolio">
                         <div class="project-header">
-                            <span class="project-mono">05_CLIENT</span>
+                            <span class="project-mono">06_CLIENT</span>
                             <div class="project-tags">
                                 <span>HTML5</span>
                                 <span>WebAudio</span>
@@ -270,7 +294,7 @@
 
                     <article class="project-card corner-frame wip-card">
                         <div class="project-header">
-                            <span class="project-mono">06_PIPELINE</span>
+                            <span class="project-mono">07_PIPELINE</span>
                             <div class="project-tags">
                                 <span>In Dev</span>
                                 <span>WIP</span>
@@ -348,6 +372,8 @@
                         <h4 class="modal-block-label">// Tech Stack & Key Components</h4>
                         <ul id="modalTechList" class="modal-list"></ul>
                     </div>
+
+                    <div id="modalActionContainer"></div>
                 </div>
             </div>
         </div>
@@ -373,6 +399,8 @@
                     <span class="footer-dim">— personal playground</span>
                 </div>
                 <div class="footer-right">
+                    <a href="mailto:contact.alexandr@proton.me" class="footer-anchor">Email</a>
+                    <a href="https://ko-fi.com/alexik45#setGoalModal" target="_blank" rel="noreferrer" class="footer-anchor" title="Support on Ko-fi">Ko-fi</a>
                     <a href="https://discordapp.com/users/768033946666663946" target="_blank" rel="noreferrer" class="footer-anchor">Discord</a>
                     <a href="https://github.com/Alexik45" target="_blank" rel="noreferrer" class="footer-anchor">GitHub</a>
                 </div>
@@ -380,7 +408,6 @@
         </footer>
 
         <script src="https://www.youtube.com/iframe_api"></script>
-        <script src="js/main.js?v=4"></script>
+        <script src="js/main.js?v=5"></script>
     </body>
 </html>
-    
