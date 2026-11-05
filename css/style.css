@@ -335,8 +335,8 @@ main {
 
 .hero-layout {
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 48px;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 36px;
     align-items: center;
 }
 
@@ -367,7 +367,7 @@ main {
 
 .hero-title {
     font-family: var(--font-display);
-    font-size: 42px;
+    font-size: 40px;
     line-height: 1.12;
     letter-spacing: -0.025em;
     margin-bottom: 20px;
@@ -467,21 +467,28 @@ main {
     border-color: var(--border-hover);
 }
 
+/* Dual Stage: Scope Left, Spotify-Style Animated Lyrics Right */
+.viewport-duo-stage {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.stage-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 #scopeCanvas {
     width: 100%;
     height: auto;
     background: #0b0c0e;
     border: 1px solid var(--border-base);
     display: block;
-    aspect-ratio: 460 / 240;
+    aspect-ratio: 460 / 230;
     cursor: pointer;
-}
-
-.media-dual-deck {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 8px;
 }
 
 .ado-player-bar {
@@ -491,7 +498,7 @@ main {
     padding: 10px 12px;
     background: #0d0f13;
     border: 1px solid var(--border-base);
-    gap: 10px;
+    gap: 8px;
 }
 
 .player-top-row {
@@ -565,54 +572,122 @@ main {
     text-align: right;
 }
 
-.track-lyrics-panel {
+/* Spotify-Style Animated Lyrics Panel */
+.lyrics-panel {
     background: #0d0f13;
     border: 1px solid var(--border-base);
-    padding: 10px 12px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    height: 125px;
     overflow: hidden;
+    position: relative;
+    min-height: 220px;
 }
 
-.lyrics-topbar {
+.lyrics-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 9px;
-    color: var(--text-muted);
-    padding-bottom: 5px;
+    padding-bottom: 6px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     margin-bottom: 8px;
-    letter-spacing: 0.04em;
+    z-index: 5;
 }
 
-.lyrics-tag {
+.lyrics-badge {
+    font-size: 9px;
+    font-weight: 700;
     color: var(--accent-highlight);
-    font-weight: 600;
+    letter-spacing: 0.06em;
 }
 
-.lyrics-index {
+.lyrics-track-counter {
+    font-size: 9px;
     color: var(--text-muted);
 }
 
-.lyrics-body {
+.lyrics-stage {
+    position: relative;
     flex-grow: 1;
-    overflow-y: auto;
-    font-size: 11px;
-    line-height: 1.6;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%);
+}
+
+.lyrics-scroller {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transform: translateY(0);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.lyric-line {
+    padding: 4px 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    opacity: 0.22;
+    transform: scale(0.96);
+    transform-origin: left center;
+    filter: blur(0.4px);
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.35s ease, color 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+
+.lyric-line:hover {
+    opacity: 0.55;
+    color: var(--text-secondary);
+}
+
+.lyric-line.near {
+    opacity: 0.48;
+    transform: scale(0.99);
+    color: var(--text-secondary);
+    filter: none;
+}
+
+.lyric-line.active {
+    color: #ffffff;
+    opacity: 1;
+    transform: scale(1.05);
+    font-weight: 700;
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.35);
+    filter: none;
+}
+
+.lyrics-empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 20px;
+}
+
+.empty-code {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+}
+
+.empty-title {
+    font-size: 13px;
+    font-weight: 700;
     color: var(--text-primary);
-    white-space: pre-line;
-    padding-right: 6px;
-    font-family: var(--font-mono);
 }
 
-.lyrics-body::-webkit-scrollbar {
-    width: 3px;
-}
-
-.lyrics-body::-webkit-scrollbar-thumb {
-    background: var(--border-accent);
+.empty-desc {
+    font-size: 10px;
+    color: var(--text-muted);
 }
 
 .viewport-footer {
@@ -1321,6 +1396,21 @@ main {
     color: var(--text-primary);
 }
 
+@media (max-width: 960px) {
+    .hero-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+
+    .viewport-duo-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .lyrics-panel {
+        min-height: 180px;
+    }
+}
+
 @media (max-width: 860px) {
     .content-section {
         padding: 64px 0;
@@ -1328,11 +1418,6 @@ main {
 
     .hero-section {
         padding: 56px 0 48px;
-    }
-
-    .hero-layout {
-        grid-template-columns: 1fr;
-        gap: 36px;
     }
 
     .lab-layout {
@@ -1397,10 +1482,6 @@ main {
     .action-btn {
         width: 100%;
         justify-content: center;
-    }
-
-    .media-dual-deck {
-        grid-template-columns: 1fr;
     }
 
     .modal-backdrop {
