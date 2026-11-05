@@ -477,18 +477,26 @@ main {
     cursor: pointer;
 }
 
-.ado-player-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
+/* Dual Deck: Player & Lyrics Terminal */
+.media-dual-deck {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     margin-top: 8px;
-    background: #0d0f13;
-    border: 1px solid var(--border-base);
-    gap: 12px;
 }
 
-.player-left {
+.ado-player-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #0d0f13;
+    border: 1px solid var(--border-base);
+    gap: 10px;
+    height: 140px;
+}
+
+.player-top-row {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -501,7 +509,7 @@ main {
     color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: 10px;
-    padding: 4px 8px;
+    padding: 5px 8px;
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.15s ease;
@@ -531,14 +539,12 @@ main {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: 160px;
 }
 
-.player-right {
+.player-bottom-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;
 }
 
 .vol-label {
@@ -547,7 +553,7 @@ main {
 }
 
 .vol-slider {
-    width: 70px;
+    flex-grow: 1;
     height: 4px;
     accent-color: var(--accent-highlight);
     background: var(--bg-surface-elevated);
@@ -561,82 +567,65 @@ main {
     text-align: right;
 }
 
-/* Lyrics Terminal Monitor */
-.lyrics-monitor {
-    margin-top: 8px;
-    background: #08090b;
+/* Expanded Real Lyrics Terminal Box */
+.track-lyrics-panel {
+    background: #0d0f13;
     border: 1px solid var(--border-base);
     padding: 10px 12px;
-    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    height: 140px;
+    overflow: hidden;
 }
 
 .lyrics-topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    padding-bottom: 6px;
-    margin-bottom: 8px;
-    font-size: 10px;
-}
-
-.lyrics-indicator {
+    font-size: 9px;
     color: var(--text-muted);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
 }
 
-.lyrics-pulse {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent-highlight);
-    box-shadow: 0 0 6px var(--accent-highlight);
-    animation: pulse 2s infinite ease-in-out;
-}
-
-.lyrics-song-title {
+.lyrics-tag {
     color: var(--accent-highlight);
     font-weight: 600;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.lyrics-content-box {
-    max-height: 105px;
+.lyrics-index {
+    color: var(--text-muted);
+}
+
+.lyrics-body {
+    flex-grow: 1;
     overflow-y: auto;
     font-size: 11px;
-    line-height: 1.65;
+    line-height: 1.55;
     color: var(--text-secondary);
-    padding-right: 4px;
-    scroll-behavior: smooth;
+    white-space: pre-wrap;
+    padding-right: 6px;
+    font-family: var(--font-mono);
 }
 
-.lyrics-content-box::-webkit-scrollbar {
+.lyrics-body::-webkit-scrollbar {
     width: 4px;
 }
 
-.lyrics-content-box::-webkit-scrollbar-track {
-    background: #0c0d10;
+.lyrics-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
 }
 
-.lyrics-content-box::-webkit-scrollbar-thumb {
+.lyrics-body::-webkit-scrollbar-thumb {
     background: var(--border-accent);
     border-radius: 2px;
 }
 
-.lyrics-content-box p {
-    margin-bottom: 4px;
-}
-
-.lyrics-loading {
-    color: var(--text-muted);
-    font-style: italic;
+.lyrics-body::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-highlight);
 }
 
 .viewport-footer {
@@ -1423,18 +1412,16 @@ main {
         justify-content: center;
     }
 
+    .media-dual-deck {
+        grid-template-columns: 1fr;
+    }
+
     .ado-player-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
+        height: auto;
     }
 
-    .player-right {
-        justify-content: space-between;
-    }
-
-    .vol-slider {
-        flex-grow: 1;
+    .track-lyrics-panel {
+        height: 120px;
     }
 
     .modal-backdrop {
